@@ -1,0 +1,19 @@
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432
+    name: joboffers
+    username: joboffers
+    password: joboffers
+  flyway:
+    user: joboffers
+    password: joboffers
+    url: jdbc:postgresql://localhost:5432/joboffers
+
+services:
+  company:
+    url: http://localhost:3000
+  job:
+    url: http://localhost:3000
+
+server:
+  port: 8082
