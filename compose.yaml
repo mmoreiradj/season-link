@@ -1,0 +1,85 @@
+# this files holds the different services that are used by all applications
+# this includes the database, the mailer, keycloak, the s3 storage
+
+services:
+  postgresql:
+    image: bitnami/postgresql:14-debian-11
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+      POSTGRES_DB: keycloak
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak -d keycloak"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgresql:/var/lib/postgresql/data
+
+  keycloak:
+    image: bitnami/keycloak:22.0.4
+    restart: unless-stopped
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    ports:
+      - 8080:8080
+    environment:
+      KEYCLOAK_ADMIN_USER: super
+      KEYCLOAK_ADMIN_PASSWORD: super
+      KEYCLOAK_DATABASE_HOST: postgresql
+      KEYCLOAK_DATABASE_PORT: 5432
+      KEYCLOAK_DATABASE_NAME: keycloak
+      KEYCLOAK_DATABASE_USER: keycloak
+      KEYCLOAK_DATABASE_PASSWORD: keycloak
+      KEYCLOAK_ENABLE_HEALTH_ENDPOINTS: "true"
+      KEYCLOAK_ENABLE_HTTPS: "false"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/bitnami/keycloak/bin/kcadm.sh config credentials --config /tmp/config --server http://localhost:8080 --user super --password super --realm master && rm /tmp/config",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  keycloak-init:
+    image: bitnami/keycloak:22.0.4
+    restart: no
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    environment:
+      KEYCLOAK_ADMIN_USER: super
+      KEYCLOAK_ADMIN_PASSWORD: super
+      KEYCLOAK_HOST: keycloak:8080
+      KEYCLOAK_NEW_REALM: season-link
+      KEYCLOAK_NEW_CLIENT_ID: webapp
+      KEYCLOAK_NEW_CLIENT_SECRET: webapp
+      KEYCLOAK_NEW_USER: contact@season-link.com
+      KEYCLOAK_NEW_PASSWORD: contact
+      KEYCLOAK_VALID_REDIRECT_URIS: '["http://localhost:8081/*", "exp://10.112.0.115:8081"]'
+      KEYCLOAK_SMTP_HOST: mailhog
+      KEYCLOAK_SMTP_PORT: 587
+      KEYCLOAK_SMTP_USER: seasonlink
+      KEYCLOAK_SMTP_PASSWORD: seasonlink
+      DEV: true
+    volumes:
+      - ./scripts/keycloak/init-script.sh:/tmp/init-script.sh
+    entrypoint: ["/bin/sh", "-c", "/tmp/init-script.sh"]
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    restart: unless-stopped
+    ports:
+      - 1025:1025
+      - 8025:8025
+    volumes:
+      - ./.mailhog.auth:/etc/mailhog.auth:ro
+    environment:
+      MH_AUTH_FILE: /etc/mailhog.auth
+
+volumes:
+  postgresql:
