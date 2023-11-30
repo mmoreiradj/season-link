@@ -6,9 +6,9 @@ services:
     image: bitnami/postgresql:14-debian-11
     restart: unless-stopped
     environment:
-      POSTGRES_USER: keycloak
-      POSTGRES_PASSWORD: keycloak
-      POSTGRES_DB: keycloak
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U keycloak -d keycloak"]
       interval: 10s
@@ -16,6 +16,7 @@ services:
       retries: 5
     volumes:
       - postgresql:/var/lib/postgresql/data
+      - ./scripts/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   keycloak:
     image: bitnami/keycloak:22.0.4
@@ -56,8 +57,8 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: super
       KEYCLOAK_HOST: keycloak:8080
       KEYCLOAK_NEW_REALM: season-link
-      KEYCLOAK_NEW_CLIENT_ID: webapp
-      KEYCLOAK_NEW_CLIENT_SECRET: webapp
+      KEYCLOAK_NEW_CLIENT_ID: mobile-app
+      KEYCLOAK_NEW_CLIENT_SECRET: mobile-app
       KEYCLOAK_NEW_USER: contact@season-link.com
       KEYCLOAK_NEW_PASSWORD: contact
       KEYCLOAK_VALID_REDIRECT_URIS: '["http://localhost:8081/*", "exp://10.112.0.115:8081"]'
@@ -80,6 +81,57 @@ services:
       - ./.mailhog.auth:/etc/mailhog.auth:ro
     environment:
       MH_AUTH_FILE: /etc/mailhog.auth
+
+  gateway:
+    build:
+      context: apps/api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - 8081:8080
+    environment:
+      KEYCLOAK_ISSUER_URI: http://localhost:8080/realms/season-link
+      KEYCLOAK_JWK_URI: http://keycloak:8080/realms/season-link/protocol/openid-connect/certs
+      SERVER_PORT: 8080
+      JOBS_SERVICE_URL: http://mock:3000
+      JOB_OFFERS_SERVICE_URL: http://joboffers:8080
+      COMPANIES_SERVICE_URL: http://mock:3000
+      PROFILES_SERVICE_URL: http://profile:3000
+      RATINGS_SERVICE_URL: http://ratings:3000
+      NOTIFICATIONS_SERVICE_URL: http://notifications:3000
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  joboffers:
+    build:
+      context: apps/job-offers
+    environment:
+      DB_NAME: joboffers
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      R2DBC_URL: r2dbc:postgresql://postgresql:5432
+      JDBC_URL: jdbc:postgresql://postgresql:5432/joboffers
+      COMPANIES_SERVICE_URL: http://mock:3000
+      JOBS_SERVICE_URL: http://mock:3000
+      SERVER_PORT: 8080
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  
+  mock:
+    build:
+      context: apps/mock
+    volumes:
+      - ./apps/mock/data:/app/data
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/jobs"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgresql:
