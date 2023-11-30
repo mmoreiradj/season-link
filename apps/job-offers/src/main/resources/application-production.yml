@@ -9,11 +9,10 @@ spring:
     password: ${DB_PASSWORD}
     url: ${JDBC_URL}
 
-services:
-  company:
-    url: ${COMPANIES_SERVICE_URL}
-  job:
-    url: ${JOBS_SERVICE_URL}
-
 server:
   port: ${SERVER_PORT}
+
+seasonlink:
+  services:
+    companies: ${COMPANIES_SERVICE_URL}
+    jobs: ${JOBS_SERVICE_URL}

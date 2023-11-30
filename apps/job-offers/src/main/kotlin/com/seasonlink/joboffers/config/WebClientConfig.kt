@@ -10,13 +10,16 @@ import org.springframework.web.reactive.function.client.support.WebClientAdapter
 import org.springframework.web.service.invoker.HttpServiceProxyFactory
 
 @Configuration
-class WebClientConfig(private val environment: Environment) {
+class WebClientConfig(
+    private val environment: Environment,
+    private val uriConfig: UriConfig
+) {
 
     @Bean
     fun jobService(): JobService {
         val client = WebClient
             .builder()
-            .baseUrl(environment.getRequiredProperty("services.job.url"))
+            .baseUrl(uriConfig.jobs)
             .build()
 
         val factory = HttpServiceProxyFactory
@@ -30,7 +33,7 @@ class WebClientConfig(private val environment: Environment) {
     fun companyService(): CompanyService {
         val client = WebClient
             .builder()
-            .baseUrl(environment.getRequiredProperty("services.company.url"))
+            .baseUrl(uriConfig.companies)
             .build()
 
         val factory = HttpServiceProxyFactory

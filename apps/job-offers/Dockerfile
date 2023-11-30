@@ -20,4 +20,4 @@ WORKDIR /app
 
 COPY --from=build /app/build/libs/*-SNAPSHOT.jar ./app.jar
 
-ENTRYPOINT ["java", "-jar", "./app.jar"]
+ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=production", "./app.jar"]
