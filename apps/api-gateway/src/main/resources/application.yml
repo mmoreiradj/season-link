@@ -11,10 +11,9 @@ seasonlink:
     jobs: http://localhost:8082
     job-offers: http://localhost:8083
     companies: http://localhost:8084
-    applications: http://localhost:8085
-    profiles: http://localhost:8086
-    ratings: http://localhost:8087
-    notifications: http://localhost:8088
+    profiles: http://localhost:8085
+    ratings: http://localhost:8086
+    notifications: http://localhost:8087
 
 server:
   port: 8081
