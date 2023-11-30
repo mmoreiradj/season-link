@@ -1,19 +1,19 @@
 spring:
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432
-    name: joboffers
-    username: joboffers
-    password: joboffers
+    url: ${R2DBC_URL:r2dbc:postgresql://localhost:5432}
+    name: ${DB_NAME:joboffers}
+    username: ${DB_USER:joboffers}
+    password: ${DB_PASSWORD:joboffers}
   flyway:
-    user: joboffers
-    password: joboffers
-    url: jdbc:postgresql://localhost:5432/joboffers
+    user: ${DB_USER:joboffers}
+    password: ${DB_PASSWORD:joboffers}
+    url: ${JDBC_URL:jdbc:postgresql://localhost:5432/joboffers}
 
 services:
   company:
-    url: http://localhost:3000
+    url: ${COMPANY_SERVICE_URL:http://localhost:8081}
   job:
-    url: http://localhost:3000
+    url: ${JOB_SERVICE_URL:http://localhost:3000}
 
 server:
-  port: 8082
+  port: ${SERVER_PORT:8082}
