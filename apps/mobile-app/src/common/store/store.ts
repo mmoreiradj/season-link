@@ -1,4 +1,4 @@
-import userReducer from '../domains/profile/store/userSlice';
+import userReducer from 'domains/profile/store/userSlice';
 import authReducer from './auth/authSlice';
 import jobOffersReducer from 'domains/job-offers/store/job-offers.slice';
 import { configureStore } from '@reduxjs/toolkit';

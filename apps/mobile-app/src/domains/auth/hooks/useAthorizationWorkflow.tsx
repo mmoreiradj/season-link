@@ -11,8 +11,8 @@ import {
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-native';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from 'store/store';
-import { setAuth } from 'store/auth/authSlice';
+import { RootState } from 'common/store/store';
+import { setAuth } from 'common/store/auth/authSlice';
 
 enum AuthorizationState {
   PENDING = 'PENDING',

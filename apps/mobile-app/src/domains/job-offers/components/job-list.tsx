@@ -5,7 +5,7 @@ import { StyleSheet } from 'react-native';
 import { useGetJobOffersQuery } from '../store/job-offers.api';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'store/store';
+import { RootState } from 'common/store/store';
 import { setJobOffers } from '../store/job-offers.slice';
 import JobListItem from './job-list-item';
 import SelectedJobModal from './selected-job-modal';

@@ -4,8 +4,8 @@ import AuthService, {
 } from 'domains/auth/services/auth.service';
 import { emptyTokens, storeTokens } from 'common/utils/tokens';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from 'store/store';
-import { setAuth } from 'store/auth/authSlice';
+import { RootState } from 'common/store/store';
+import { setAuth } from 'common/store/auth/authSlice';
 
 export default function useTokenRefresher(): UseQueryResult<
   RefreshAccessTokenResponse | undefined,
