@@ -4,10 +4,13 @@ import { emptyTokens } from 'src/utils/tokens';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'store/store';
 import { setAuth } from 'store/auth/authSlice';
+import { useNavigate } from 'react-router-native';
+
 export function HelloWorld() {
   const user = useSelector((state: RootState) => state.user);
   const auth = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   return (
     <View>
@@ -33,6 +36,7 @@ export function HelloWorld() {
       >
         Logout
       </Button>
+      <Button onPress={() => navigate('/jobs')}>Go to jobs</Button>
     </View>
   );
 }

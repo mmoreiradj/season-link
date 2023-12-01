@@ -65,7 +65,7 @@ export default function useAuthorizationWorkflow(): UseAuthorizationWorkflowResu
       redirectUri: makeRedirectUri({
         scheme: 'myapp',
       }),
-      scopes: ['openid', 'profile'],
+      scopes: ['profile', 'email'],
     },
     discovery
   );

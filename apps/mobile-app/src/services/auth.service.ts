@@ -14,7 +14,7 @@ export type DecodedToken = {
   iat: number;
   sub: string;
   resource_access: {
-    backend: {
+    "mobile-app": {
       roles: string[];
     };
   };

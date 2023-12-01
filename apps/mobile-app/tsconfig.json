@@ -9,7 +9,8 @@
       "config/*": ["src/config/*"],
       "services/*": ["src/services/*"],
       "hooks/*": ["src/hooks/*"],
-      "store/*": ["src/store/*"]
+      "store/*": ["src/store/*"],
+      "domains/*": ["src/domains/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx"]

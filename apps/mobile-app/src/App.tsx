@@ -6,7 +6,6 @@ import ChatPage from 'src/pages/chat';
 import EmailSentPage from 'src/pages/email-sent';
 import EmailValidatedPage from 'src/pages/email-validated';
 import HistoryPage from 'src/pages/history';
-import JobPage from 'src/pages/job';
 import LoginPage from 'src/pages/login';
 import ProfileDeletePage from 'src/pages/profile-delete';
 import OnboardingPage from 'src/pages/profile-onboarding';
@@ -21,6 +20,7 @@ import { emptyTokens } from './utils/tokens';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'store/store';
 import { emptyAuth, setAuth } from 'store/auth/authSlice';
+import JobPage from 'domains/jobs/pages/job';
 
 export default function App() {
   const auth = useSelector((state: RootState) => state.auth);

@@ -6,6 +6,7 @@ import App from 'src/App';
 import { NativeRouter } from 'react-router-native';
 import { store } from 'store/store';
 import { Provider } from 'react-redux';
+import 'common/language/i18n';
 
 if (!global.btoa) {
   global.btoa = encode;
