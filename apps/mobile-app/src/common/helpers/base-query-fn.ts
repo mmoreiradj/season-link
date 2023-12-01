@@ -1,6 +1,6 @@
 import camelcaseKeys from 'camelcase-keys';
 import config from 'common/config/config';
-import { RootState } from 'store/store';
+import { RootState } from 'common/store/store';
 
 type GetStateFn = () => unknown;
 

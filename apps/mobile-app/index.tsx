@@ -4,7 +4,7 @@ import { decode, encode } from 'base-64';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import App from 'src/App';
 import { NativeRouter } from 'react-router-native';
-import { store } from 'store/store';
+import { store } from 'common/store/store';
 import { Provider } from 'react-redux';
 import 'common/language/i18n';
 
