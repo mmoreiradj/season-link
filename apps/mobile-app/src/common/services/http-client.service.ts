@@ -1,5 +1,6 @@
-import { applyCaseMiddleware } from './../../node_modules/axios-case-converter/src/middleware';
+// TODO: Use rtk-query for this service
 import axios from 'axios';
+import applyCaseMiddleware from 'axios-case-converter';
 
 const httpClient = applyCaseMiddleware(
   axios.create({

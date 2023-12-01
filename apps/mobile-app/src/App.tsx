@@ -1,26 +1,26 @@
-import { HelloWorld } from 'components/HelloWorld';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, Text } from 'react-native';
 import { Route, Routes, useNavigate } from 'react-router-native';
-import ChatPage from 'src/pages/chat';
-import EmailSentPage from 'src/pages/email-sent';
-import EmailValidatedPage from 'src/pages/email-validated';
+import ChatPage from 'domains/chat/pages/chat';
+import EmailSentPage from 'domains/profile/pages/email-sent';
+import EmailValidatedPage from 'domains/profile/pages/email-validated';
 import HistoryPage from 'src/pages/history';
 import LoginPage from 'src/pages/login';
-import ProfileDeletePage from 'src/pages/profile-delete';
-import OnboardingPage from 'src/pages/profile-onboarding';
-import ScorePage from 'src/pages/profile-score';
+import ProfileDeletePage from 'domains/profile/pages/profile-delete';
+import OnboardingPage from 'domains/profile/pages/profile-onboarding';
+import ScorePage from 'domains/profile/pages/profile-score';
 import SettingsPage from 'src/pages/profile-settings';
 import SignUpPage from 'src/pages/sign-up';
-import useAuthorizationWorkflow from 'hooks/auth/useAthorizationWorkflow';
-import useTokenRefresher from 'hooks/auth/useTokenRefresher';
 import { useEffect, useState } from 'react';
-import AuthService from 'services/auth.service';
-import { emptyTokens } from './utils/tokens';
+import { emptyTokens } from 'common/utils/tokens';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'store/store';
 import { emptyAuth, setAuth } from 'store/auth/authSlice';
-import JobPage from 'domains/jobs/pages/job';
+import JobPage from 'domains/job-offers/pages/job';
+import { HelloWorld } from 'common/components/HelloWorld';
+import useAuthorizationWorkflow from 'domains/auth/hooks/useAthorizationWorkflow';
+import useTokenRefresher from 'domains/auth/hooks/useTokenRefresher';
+import AuthService from 'domains/auth/services/auth.service';
 
 export default function App() {
   const auth = useSelector((state: RootState) => state.auth);

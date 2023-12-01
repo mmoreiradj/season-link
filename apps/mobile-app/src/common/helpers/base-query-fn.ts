@@ -1,5 +1,5 @@
 import camelcaseKeys from 'camelcase-keys';
-import config from 'config/config';
+import config from 'common/config/config';
 import { RootState } from 'store/store';
 
 type GetStateFn = () => unknown;

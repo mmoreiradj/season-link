@@ -1,7 +1,8 @@
-import config from 'config/config';
-import httpClient from './http-client.service';
-import { getTokens, storeTokens } from 'src/utils/tokens';
-import Auth from 'src/models/auth';
+// TODO: Use rtk-query for this service
+import config from 'common/config/config';
+import httpClient from 'common/services/http-client.service';
+import { getTokens, storeTokens } from 'common/utils/tokens';
+import Auth from 'domains/auth/store/auth';
 
 export type RefreshAccessTokenResponse = {
   accessToken: string;
@@ -14,7 +15,7 @@ export type DecodedToken = {
   iat: number;
   sub: string;
   resource_access: {
-    "mobile-app": {
+    'mobile-app': {
       roles: string[];
     };
   };

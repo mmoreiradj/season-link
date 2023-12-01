@@ -1,4 +1,4 @@
-import config from 'config/config';
+import config from 'common/config/config';
 import {
   AuthRequest,
   AuthRequestPromptOptions,

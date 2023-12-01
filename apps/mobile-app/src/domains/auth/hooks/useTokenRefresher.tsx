@@ -1,6 +1,8 @@
 import { UseQueryResult, useQuery } from 'react-query';
-import AuthService, { RefreshAccessTokenResponse } from 'services/auth.service';
-import { emptyTokens, storeTokens } from 'src/utils/tokens';
+import AuthService, {
+  RefreshAccessTokenResponse,
+} from 'domains/auth/services/auth.service';
+import { emptyTokens, storeTokens } from 'common/utils/tokens';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'store/store';
 import { setAuth } from 'store/auth/authSlice';

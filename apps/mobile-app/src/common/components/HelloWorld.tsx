@@ -1,6 +1,6 @@
 import { View } from 'react-native';
 import { Button, Text } from 'react-native-paper';
-import { emptyTokens } from 'src/utils/tokens';
+import { emptyTokens } from 'common/utils/tokens';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'store/store';
 import { setAuth } from 'store/auth/authSlice';

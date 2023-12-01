@@ -1,10 +1,10 @@
-import userReducer from './user/userSlice';
+import userReducer from '../domains/profile/store/userSlice';
 import authReducer from './auth/authSlice';
-import jobOffersReducer from 'src/domains/jobs/store/job-offers.slice';
+import jobOffersReducer from 'domains/job-offers/store/job-offers.slice';
 import { configureStore } from '@reduxjs/toolkit';
-import { jobOffersApi } from 'domains/jobs/store/job-offers.api';
-import { jobsApi } from 'domains/jobs/store/jobs.api';
-import { companiesApi } from 'domains/jobs/store/companies.api';
+import { jobOffersApi } from 'domains/job-offers/store/job-offers.api';
+import { jobsApi } from 'domains/job-offers/store/jobs.api';
+import { companiesApi } from 'domains/job-offers/store/companies.api';
 
 export const store = configureStore({
   reducer: {
