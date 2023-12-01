@@ -163,6 +163,32 @@ kcadm.sh update \
     -s "smtpServer.user=$KEYCLOAK_SMTP_USER" \
     -s "smtpServer.password=$KEYCLOAK_SMTP_PASSWORD"
 
+# Create default user to manage profiles
+kcadm.sh create users \
+    --config /tmp/config \
+    -r "$KEYCLOAK_NEW_REALM" \
+    -s username="$KEYCLOAK_PROFILES_USER" \
+    -s email="profilemanager@season-link.com" \
+    -s enabled=true \
+    -s emailVerified=true \
+    -s firstName="Profile" \
+    -s lastName=Manager
+
+kcadm.sh set-password \
+    --config /tmp/config \
+    -r "$KEYCLOAK_NEW_REALM" \
+    --username "$KEYCLOAK_PROFILES_USER" \
+    --new-password "$KEYCLOAK_PROFILES_PASSWORD"
+
+echo "Creating profile service user"
+
+kcadm.sh add-roles \
+    --config /tmp/config \
+    --cclientid realm-management \
+    --rolename manage-users \
+    -r "$KEYCLOAK_NEW_REALM" \
+    --uusername "$KEYCLOAK_PROFILES_USER" \
+
 # Adding dev users
 if [ "$DEV" = "true" ]; then
     echo "Adding dev users"

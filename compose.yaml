@@ -68,6 +68,8 @@ services:
       KEYCLOAK_SMTP_PORT: 587
       KEYCLOAK_SMTP_USER: seasonlink
       KEYCLOAK_SMTP_PASSWORD: seasonlink
+      KEYCLOAK_PROFILES_USER: "profiles"
+      KEYCLOAK_PROFILES_PASSWORD: "profiles"
       DEV: true
     volumes:
       - ./scripts/keycloak/init-script.sh:/tmp/init-script.sh
