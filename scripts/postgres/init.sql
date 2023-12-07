@@ -1,5 +1,6 @@
 CREATE DATABASE joboffers;
 CREATE DATABASE keycloak;
+CREATE DATABASE ratings;
 
 CREATE USER keycloak WITH PASSWORD 'keycloak';
 

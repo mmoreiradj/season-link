@@ -26,5 +26,10 @@
             "id": "e1b2b2a0-5b9a-4b9e-9b9a-9b9a9b9a9b9b",
             "name": "Meta"
         }
+    ],
+    "profiles": [
+        {
+            "id": "e1b2b2a0-5b9a-4b9e-9b9a-9b9a9b9a9b9a"
+        }
     ]
 }

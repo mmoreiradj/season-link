@@ -17,6 +17,13 @@ class Router(private val uriConfig: UriConfig) {
                     .path("/job-offers/**")
                     .uri(uriConfig.jobOffers)
             }
+            .route { r ->
+                r
+                    .path("/candidates/*/reviews")
+                    .or()
+                    .path("/companies/*/reviews")
+                    .uri(uriConfig.ratings)
+            }
             .route{r ->
                 r
                     .path("/applications/**")
@@ -38,11 +45,6 @@ class Router(private val uriConfig: UriConfig) {
                 r
                     .path("/profiles/**")
                     .uri(uriConfig.profiles)
-            }
-            .route { r ->
-                r
-                    .path("/ratings/**")
-                    .uri(uriConfig.ratings)
             }
             .route { r ->
                 r

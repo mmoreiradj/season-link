@@ -11,7 +11,6 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory
 
 @Configuration
 class WebClientConfig(
-    private val environment: Environment,
     private val uriConfig: UriConfig
 ) {
 
