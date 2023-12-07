@@ -237,6 +237,23 @@ if [ "$DEV" = "true" ]; then
         -r "$KEYCLOAK_NEW_REALM" \
         --uusername "admin" \
         --rolename admin
+    
+    echo "DEV: extend the token lifespan"
+
+    kcadm.sh update realms/season-link \
+        --config /tmp/config \
+        -s accessTokenLifespan=36000
 fi
 
+
+
 echo "Success"
+
+# When developping, you may want to debug keycloak, so keep the container around
+if [ "$DEV" = "true" ]; then
+    echo "Keeping the container alive, don't forget to kill it !"
+    tail -f /dev/null
+fi
+
+
+kcadm.sh get realms --config /tmp/config
