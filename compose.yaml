@@ -99,19 +99,11 @@ services:
       JOBS_SERVICE_URL: http://localhost:3000
       JOB_OFFERS_SERVICE_URL: http://localhost:8082
       COMPANIES_SERVICE_URL: http://localhost:3000
-      PROFILES_SERVICE_URL: http://localhost:3000
+      PROFILES_SERVICE_URL: http://localhost:4000
       RATINGS_SERVICE_URL: http://localhost:3000
       NOTIFICATIONS_SERVICE_URL: http://localhost:3000
     healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--quiet",
-          "--tries=1",
-          "--spider",
-          "http://localhost:8080/actuator/health",
-        ]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -131,15 +123,7 @@ services:
       JOBS_SERVICE_URL: http://localhost:3000
       SERVER_PORT: 8082
     healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--quiet",
-          "--tries=1",
-          "--spider",
-          "http://localhost:3000/actuator/health",
-        ]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/actuator/health"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -151,18 +135,56 @@ services:
     volumes:
       - ./apps/mock/data:/app/data
     healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--quiet",
-          "--tries=1",
-          "--spider",
-          "http://localhost:3000/jobs",
-        ]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/jobs"]
       interval: 10s
       timeout: 5s
       retries: 5
 
+  profile-backend:
+    image: season-link-profiles
+    build: ./apps/profiles/
+    env_file:
+      - ./apps/profiles/.env.local
+    network_mode: host
+    depends_on:
+      profile-postgres:
+        condition: service_healthy
+      profile-minio:
+        condition: service_started
+
+  profile-postgres:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=profiles
+      - POSTGRES_USER=profiles
+      - POSTGRES_DB=profiles
+    network_mode: host
+    volumes:
+      # Data folder
+      - "profile-postgresql:/var/lib/postgresql/data"
+      # Initial migration folder
+      - "./apps/profiles/migrations:/docker-entrypoint-initdb.d"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U profiles -p 5344"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    command: -p 5344
+
+  profile-minio:
+    image: minio/minio
+    volumes:
+      - "minio_storage:/data"
+    network_mode: host
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio_pass
+
+    command: server --console-address ":9001" /data
+
 volumes:
   postgresql:
+  minio_storage:
+  profile-postgresql:
