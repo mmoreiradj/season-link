@@ -28,7 +28,10 @@ use axum::{
 };
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 
-use crate::api::cv::{get_cv, get_cv_self};
+use crate::api::{
+    cv::{get_cv, get_cv_self},
+    picture::get_candidate_picture,
+};
 
 mod api;
 
@@ -72,7 +75,8 @@ async fn main() -> anyhow::Result<()> {
         .route(
             "/user/:user_id",
             get(get_candidate).delete(delete_candidate.layer(middleware::from_fn(is_admin))),
-        );
+        )
+        .route("/user/:user_id/picture", get(get_candidate_picture));
 
     // Register the user files operations
     router = router

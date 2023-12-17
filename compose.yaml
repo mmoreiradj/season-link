@@ -184,6 +184,14 @@ services:
 
     command: server --console-address ":9001" /data
 
+  # Image generator used for the PFPs
+  go-image-generator:
+    image: ghcr.io/mathias-boulay/go-image-generator:latest
+    network_mode: host
+    environment:
+      - SERVER_PORT=5555
+      - SERVER_IMAGE_BINARY=true
+
 volumes:
   postgresql:
   minio_storage:
