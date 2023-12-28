@@ -19,8 +19,10 @@ export default function JobList() {
   useEffect(() => {
     if (data) {
       dispatch(setJobOffers(data));
+    } else if (error) {
+      console.error(error);
     }
-  }, [data]);
+  }, [data, error]);
 
   if (isLoading) {
     return (

@@ -29,6 +29,16 @@ export default function SelectedJobModal({ jobOffer }: Props) {
 
   const navigate = useNavigate();
 
+  /**
+   * - Creates an application for the selected job offer
+   * - Hide the modal
+   * - Navigate to the chat screen
+   */
+  const handleApply = () => {
+    dispatch(setSelectedJobOffer(null));
+    navigate('/chat');
+  };
+
   useEffect(() => {
     if (companyError) {
       console.error(companyError);
@@ -103,7 +113,7 @@ export default function SelectedJobModal({ jobOffer }: Props) {
               <Button
                 mode='contained'
                 style={{ marginTop: 20 }}
-                onPress={() => navigate('/chat')}
+                onPress={() => handleApply()}
               >
                 {t('jobOffers:detail:apply')}
               </Button>
