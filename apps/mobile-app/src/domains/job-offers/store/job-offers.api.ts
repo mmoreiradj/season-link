@@ -15,8 +15,14 @@ export const jobOffersApi = createApi({
     getJobOfferAdvantages: builder.query<Advantage[], string>({
       query: (jobOfferId) => `/job-offers/${jobOfferId}/advantages`,
     }),
+    getJobOffer: builder.query<JobOfferType, string>({
+      query: (id) => `/job-offers/${id}`,
+    }),
   }),
 });
 
-export const { useGetJobOffersQuery, useGetJobOfferAdvantagesQuery } =
-  jobOffersApi;
+export const {
+  useGetJobOffersQuery,
+  useGetJobOfferAdvantagesQuery,
+  useGetJobOfferQuery,
+} = jobOffersApi;
