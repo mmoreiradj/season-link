@@ -1,7 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, Text } from 'react-native';
 import { Route, Routes, useNavigate } from 'react-router-native';
-import ChatPage from 'domains/chat/pages/chat';
 import EmailSentPage from 'domains/profile/pages/email-sent';
 import EmailValidatedPage from 'domains/profile/pages/email-validated';
 import HistoryPage from 'src/pages/history';
@@ -21,6 +20,8 @@ import { HelloWorld } from 'common/components/HelloWorld';
 import useAuthorizationWorkflow from 'domains/auth/hooks/useAthorizationWorkflow';
 import useTokenRefresher from 'domains/auth/hooks/useTokenRefresher';
 import AuthService from 'domains/auth/services/auth.service';
+import ChatDetailPage from 'domains/chat/pages/chat-detail';
+import ChatPage from 'domains/chat/pages/chat';
 
 export default function App() {
   const auth = useSelector((state: RootState) => state.auth);
@@ -90,6 +91,7 @@ export default function App() {
             <Route path='/score' Component={ScorePage} />
             <Route path='/history' Component={HistoryPage} />
             <Route path='/jobs' Component={JobPage} />
+            <Route path='/chat/:applicationId' Component={ChatDetailPage} />
             <Route path='/chat' Component={ChatPage} />
           </Routes>
         )}

@@ -37,7 +37,7 @@ class ApplicationController(
     fun findApplication(
         @PathVariable("applicationId") applicationId: UUID,
         @RequestHeader("X-User-Id") userId: UUID,
-        @RequestHeader("X-User-Role") candidateRole: String,
+        @RequestHeader("X-User-Roles") candidateRole: String,
     ) = applicationService
         .findById(applicationId)
         .doOnNext { application ->

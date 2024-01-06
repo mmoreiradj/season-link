@@ -31,7 +31,7 @@ class ApplicationService(
             }
             .switchIfEmpty(
                 Mono.error(
-                    ResponseStatusException(HttpStatus.BAD_REQUEST, "Company does not exit")
+                    ResponseStatusException(HttpStatus.NOT_FOUND, "Company does not exist")
                 )
             )
 
@@ -39,7 +39,7 @@ class ApplicationService(
         applicationRepository.findById(applicationId)
             .switchIfEmpty(
                 Mono.error(
-                    ResponseStatusException(HttpStatus.BAD_REQUEST, "Application does not exit")
+                    ResponseStatusException(HttpStatus.NOT_FOUND, "Application does not exist")
                 )
             )
 }

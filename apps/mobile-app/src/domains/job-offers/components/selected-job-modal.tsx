@@ -10,6 +10,7 @@ import { useGetJobOfferAdvantagesQuery } from '../store/job-offers.api';
 import { useTranslation } from 'react-i18next';
 import AdvantageList from './advantage-list';
 import { useNavigate } from 'react-router-native';
+import { useApplyMutation } from '../store/applications.api';
 
 type Props = {
   jobOffer: JobOfferType;
@@ -28,6 +29,16 @@ export default function SelectedJobModal({ jobOffer }: Props) {
     useGetJobOfferAdvantagesQuery(jobOffer.id);
 
   const navigate = useNavigate();
+
+  const [apply, { isLoading: isApplicationLoading }] = useApplyMutation();
+
+  const handleApply = async () => {
+    const payload = await apply(jobOffer.id).unwrap();
+    dispatch(setSelectedJobOffer(null));
+    navigate(`/chat/${payload.id}`, {
+      state: { applicationId: payload.id },
+    });
+  };
 
   useEffect(() => {
     if (companyError) {
@@ -100,13 +111,17 @@ export default function SelectedJobModal({ jobOffer }: Props) {
               </Text>
               <Text>{jobOffer.description}</Text>
 
-              <Button
-                mode='contained'
-                style={{ marginTop: 20 }}
-                onPress={() => navigate('/chat')}
-              >
-                {t('jobOffers:detail:apply')}
-              </Button>
+              {!isApplicationLoading ? (
+                <Button
+                  mode='contained'
+                  style={{ marginTop: 20 }}
+                  onPress={handleApply}
+                >
+                  {t('jobOffers:detail:apply')}
+                </Button>
+              ) : (
+                <Text>{t('common:loadingMessage')}</Text>
+              )}
             </View>
           </View>
         ) : (

@@ -8,9 +8,9 @@ spring:
 
 seasonlink:
   services:
-    jobs: http://localhost:8082
-    job-offers: http://localhost:8083
-    companies: http://localhost:8084
+    jobs: http://localhost:3000
+    job-offers: http://localhost:8082
+    companies: http://localhost:3000
     profiles: http://localhost:8085
     ratings: http://localhost:8086
     notifications: http://localhost:8087

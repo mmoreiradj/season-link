@@ -1,6 +1,7 @@
 package com.seasonlink.joboffers.model
 
 import org.springframework.data.annotation.Id
+import java.time.LocalDateTime
 import java.util.*
 
 data class Application (
@@ -8,6 +9,6 @@ data class Application (
     val state: ApplicationState,
     val jobOfferId: UUID?,
     val candidateId: UUID?,
-    val createdAt: Date?,
-    val updatedAt: Date?
+    val createdAt: LocalDateTime?,
+    val updatedAt: LocalDateTime?
 )
