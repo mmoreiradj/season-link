@@ -45,6 +45,9 @@ class ApplicationController(
                 return@doOnNext
             } else if (application.candidateId == userId) {
                 return@doOnNext
+            } else if (candidateRole == "client_recruiter") {
+                // TODO: check if the recruiter is the owner of the job offer
+                return@doOnNext
             } else {
                 throw ResponseStatusException(HttpStatus.FORBIDDEN)
             }
@@ -79,10 +82,10 @@ class ApplicationController(
     fun updateState(
         @PathVariable("applicationId") applicationId: UUID,
         @RequestHeader("X-User-Id") candidateId: UUID,
-        @RequestHeader("X-User-Role") role: String,
-        @Valid @RequestBody updateApplicationDto: UpdateApplicationDto
+        @RequestHeader("X-User-Roles") role: String,
+        @RequestBody updateApplicationDto: UpdateApplicationDto
     ): Mono<Application> =
-        if (role == "recruiter") {
+        if (role == "client_recruiter") {
             applicationService
                 .updateState(
                     applicationId,

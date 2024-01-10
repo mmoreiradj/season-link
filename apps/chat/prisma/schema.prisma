@@ -1,0 +1,29 @@
+////////////////////////////////////////////////
+//            Source & generators             //
+////////////////////////////////////////////////
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["tracing"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+////////////////////////////////////////////////
+//            Model definitions               //
+////////////////////////////////////////////////
+model Message {
+  id        String   @id @default(uuid()) @db.Uuid
+  content   String
+  // Special messages
+  // For example, a message that accepts a job offer, rejects a job offer, accept a candidate, reject a candidate
+  type      String?
+  authorId  String @map("author_id")
+  applicationId String @map("application_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("messages")
+}

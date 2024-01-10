@@ -14,6 +14,7 @@ seasonlink:
     profiles: ${PROFILES_SERVICE_URL}
     ratings: ${RATINGS_SERVICE_URL}
     notifications: ${NOTIFICATIONS_SERVICE_URL}
+    chat: ${CHAT_SERVICE_URL}
 
 server:
   port: ${SERVER_PORT}
