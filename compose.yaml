@@ -87,62 +87,36 @@ services:
       MH_AUTH_FILE: /etc/mailhog.auth
 
   gateway:
+    container_name: gateway
+    command: ["./mvnw", "spring-boot:run"]
+    env_file:
+      - ./apps/gateway/.env
     build:
-      context: apps/api-gateway
+      context: apps/gateway
       dockerfile: Dockerfile
-    network_mode: host
-    environment:
-      KEYCLOAK_ISSUER_URI: http://10.0.2.2:8080/realms/season-link
-      # KEYCLOAK_ISSUER_URI: http://localhost:8080/realms/season-link
-      KEYCLOAK_JWK_URI: http://localhost:8080/realms/season-link/protocol/openid-connect/certs
-      SERVER_PORT: 8081
-      JOBS_SERVICE_URL: http://localhost:3000
-      JOB_OFFERS_SERVICE_URL: http://localhost:8082
-      COMPANIES_SERVICE_URL: http://localhost:3000
-      PROFILES_SERVICE_URL: http://localhost:3000
-      RATINGS_SERVICE_URL: http://localhost:3000
-      NOTIFICATIONS_SERVICE_URL: http://localhost:3000
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--quiet",
-          "--tries=1",
-          "--spider",
-          "http://localhost:8080/actuator/health",
-        ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      target: base
+    restart: unless-stopped
+    develop:
+      watch:
+        - action: sync+restart
+          path: apps/gateway
+          target: /app
 
-  joboffers:
+  job-offers:
+    container_name: job-offers
+    command: ["./mvnw", "spring-boot:run"]
+    env_file:
+      - ./apps/job-offers/.env
     build:
       context: apps/job-offers
-    network_mode: host
+      dockerfile: Dockerfile
+      target: base
     restart: unless-stopped
-    environment:
-      DB_NAME: joboffers
-      DB_USER: postgres
-      DB_PASSWORD: postgres
-      R2DBC_URL: r2dbc:postgresql://localhost:5432
-      JDBC_URL: jdbc:postgresql://localhost:5432/joboffers
-      COMPANIES_SERVICE_URL: http://localhost:3000
-      JOBS_SERVICE_URL: http://localhost:3000
-      SERVER_PORT: 8082
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--quiet",
-          "--tries=1",
-          "--spider",
-          "http://localhost:3000/actuator/health",
-        ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    develop:
+      watch:
+        - action: sync+restart
+          path: apps/job-offers
+          target: /app
 
   mock:
     build:
