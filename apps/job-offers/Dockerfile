@@ -1,23 +1,24 @@
-# Build stage
-FROM alpine:3.18 AS build
-
-RUN apk add --no-cache openjdk17
+FROM eclipse-temurin:17-jdk-alpine AS base
 
 WORKDIR /app
 
-COPY src src
-COPY gradle gradle
-COPY settings.gradle build.gradle gradlew ./
+COPY .mvn/ .mvn
+COPY mvnw pom.xml ./
 
-RUN --mount=type=cache,target=/root/.gradle ./gradlew bootJar -x test --no-daemon
+RUN ./mvnw dependency:go-offline
 
-# Run stage
-FROM alpine:3.18 AS run
+COPY src ./src
 
-RUN apk add --no-cache openjdk17-jre
+FROM base AS build
+
+RUN ./mvnw package -DskipTests
+
+FROM eclipse-temurin:17-jre-alpine AS base
 
 WORKDIR /app
 
-COPY --from=build /app/build/libs/*-SNAPSHOT.jar ./app.jar
+COPY --from=build /app/target/*.jar ./app.jar
 
-ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=production", "./app.jar"]
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "app.jar"]

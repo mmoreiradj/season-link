@@ -1,0 +1,19 @@
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI}
+          jwk-set-uri: ${KEYCLOAK_JWKS_URI}
+
+seasonlink:
+  services:
+    jobs: ${JOBS_SERVICE_URL}
+    job-offers: ${JOB_OFFERS_SERVICE_URL}
+    companies: ${COMPANIES_SERVICE_URL}
+    profiles: ${PROFILES_SERVICE_URL}
+    ratings: ${RATINGS_SERVICE_URL}
+    notifications: ${NOTIFICATIONS_SERVICE_URL}
+
+server:
+  port: ${SERVER_PORT}
