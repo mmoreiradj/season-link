@@ -18,7 +18,7 @@ services:
       retries: 5
     volumes:
       - postgresql:/var/lib/postgresql/data
-      - ./scripts/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./scripts/postgres/:/docker-entrypoint-initdb.d/
 
   keycloak:
     image: bitnami/keycloak:22.0.4
@@ -63,7 +63,7 @@ services:
       KEYCLOAK_NEW_CLIENT_SECRET: mobile-app
       KEYCLOAK_NEW_USER: contact@season-link.com
       KEYCLOAK_NEW_PASSWORD: contact
-      KEYCLOAK_VALID_REDIRECT_URIS: '["http://localhost:8081/*", "exp://10.112.0.115:8081"]'
+      KEYCLOAK_VALID_REDIRECT_URIS: '["http://localhost:4354/*", "http://127.0.0.1:4354/*", "exp://127.0.0.1:4354/*"]'
       KEYCLOAK_SMTP_HOST: mailhog
       KEYCLOAK_SMTP_PORT: 587
       KEYCLOAK_SMTP_USER: seasonlink
@@ -101,6 +101,13 @@ services:
         - action: sync+restart
           path: apps/gateway
           target: /app
+    ports:
+      - "8081:8080"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   job-offers:
     container_name: job-offers
@@ -112,31 +119,62 @@ services:
       dockerfile: Dockerfile
       target: base
     restart: unless-stopped
+    ports:
+      - "8082:8080"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      postgresql:
+        condition: service_healthy
     develop:
       watch:
         - action: sync+restart
           path: apps/job-offers
           target: /app
-
   mock:
     build:
       context: apps/mock
-    network_mode: host
     volumes:
       - ./apps/mock/data:/app/data
     healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--quiet",
-          "--tries=1",
-          "--spider",
-          "http://localhost:3000/jobs",
-        ]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/jobs"]
       interval: 10s
       timeout: 5s
       retries: 5
 
+  profile-backend:
+    image: season-link-profiles
+    build: ./apps/profiles/
+    env_file:
+      - ./apps/profiles/.env.local
+    ports:
+      - "4000:4000"
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      profile-minio:
+        condition: service_started
+
+  profile-minio:
+    image: minio/minio
+    volumes:
+      - "minio_storage:/data"
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio_pass
+
+    command: server --console-address ":9001" /data
+
+  # Image generator used for the PFPs
+  go-image-generator:
+    image: ghcr.io/mathias-boulay/go-image-generator:latest
+    environment:
+      - SERVER_PORT=5555
+      - SERVER_IMAGE_BINARY=true
+
 volumes:
   postgresql:
+  minio_storage:

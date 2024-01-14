@@ -1,0 +1,48 @@
+version: "3.8"
+services:
+  profile-backend:
+    image: season-link-profiles
+    build: ./
+    env_file:
+      - .env
+    network_mode: host
+    depends_on:
+      season-link-postgres:
+        condition: service_healthy
+      minio:
+        condition: service_started
+
+  profile-postgres:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=profiles
+      - POSTGRES_USER=profiles
+      - POSTGRES_DB=profiles
+    network_mode: host
+    volumes:
+      # Data folder
+      - "./postgres_data:/var/lib/postgresql/data"
+      # Initial migration folder
+      - "./migrations:/docker-entrypoint-initdb.d"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U profiles -p 5344"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    command: -p 5344
+
+  profile-minio:
+    image: minio/minio
+    volumes:
+      - "minio_storage:/data"
+    network_mode: host
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio_pass
+
+    command: server --console-address ":9001" /data
+
+volumes:
+  minio_storage: {}

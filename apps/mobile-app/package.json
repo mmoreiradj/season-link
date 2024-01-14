@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.tsx",
   "scripts": {
-    "start": "expo start --host 10.112.0.115 --port 8082",
+    "start": "expo start --host localhost --port 4354",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
