@@ -2,9 +2,31 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from 'app/app.module';
+import { spawn } from 'child_process';
 import { Logger } from 'nestjs-pino';
 import { ConfigEnum } from 'shared/config/app.config';
 import { PrismaCLientKnownRequestErrorFilter as PrismaClientKnownRequestErrorFilter } from 'shared/filters/prisma-client-known-request-error.filter';
+
+async function migrate(): Promise<string[]> {
+  return new Promise<string[]>((resolve, reject) => {
+    const migrate = spawn('npm', ['run', 'migrate:up']);
+    const output = [];
+    migrate.stdout.on('data', (data) => {
+      if (data.toString() !== '\n')
+        output.push(data.toString().trim().split('\n').join(' '));
+    });
+    migrate.stderr.on('data', (data) => {
+      if (data.toString() !== '\n') output.push(data.toString().trim());
+    });
+    migrate.on('close', (code) => {
+      if (code === 0) {
+        resolve(output);
+      }
+
+      reject(output);
+    });
+  });
+}
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -23,6 +45,13 @@ async function bootstrap() {
 
   const host = config.getOrThrow(ConfigEnum.SERVER_HOST);
   const port = config.getOrThrow(ConfigEnum.SERVER_PORT);
+
+  logger.log(`Migrating database`, 'bootstrap');
+
+  const output = await migrate();
+  for (const line of output) {
+    logger.log(line, 'bootstrap');
+  }
 
   logger.log(`Starting server on ${host}:${port}`, 'bootstrap');
 
