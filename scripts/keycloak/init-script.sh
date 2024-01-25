@@ -98,6 +98,12 @@ kcadm.sh create clients/"$NEW_CLIENT_ID"/roles \
 kcadm.sh create clients/"$NEW_CLIENT_ID"/roles \
     --config /tmp/config \
     -r "$KEYCLOAK_NEW_REALM" \
+    -s name=client_recruiter \
+    -s description="User related to recruiters actions"
+
+kcadm.sh create clients/"$NEW_CLIENT_ID"/roles \
+    --config /tmp/config \
+    -r "$KEYCLOAK_NEW_REALM" \
     -s name=client_admin \
     -s description="User related to administration actions"
 
@@ -231,12 +237,33 @@ if [ "$DEV" = "true" ]; then
         --username "admin" \
         --new-password "admin"
 
-
     kcadm.sh add-roles \
         --config /tmp/config \
         -r "$KEYCLOAK_NEW_REALM" \
         --uusername "admin" \
         --rolename admin
+    
+    kcadm.sh create users \
+        --config /tmp/config \
+        -r "$KEYCLOAK_NEW_REALM" \
+        -s enabled=true \
+        -s emailVerified=true \
+        -s username="recruiter" \
+        -s email="recruiter@season-link.com" \
+        -s firstName=Recruiter \
+        -s lastName=User
+    
+    kcadm.sh set-password \
+        --config /tmp/config \
+        -r "$KEYCLOAK_NEW_REALM" \
+        --username "recruiter" \
+        --new-password "recruiter"
+
+    kcadm.sh add-roles \
+        --config /tmp/config \
+        -r "$KEYCLOAK_NEW_REALM" \
+        --uusername "recruiter" \
+        --rolename recruiter
     
     echo "DEV: extend the token lifespan"
 

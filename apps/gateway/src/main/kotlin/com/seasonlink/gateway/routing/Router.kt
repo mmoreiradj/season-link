@@ -11,16 +11,22 @@ class Router(private val uriConfig: UriConfig) {
 
     @Bean
     fun gatewayRouter(builder: RouteLocatorBuilder): RouteLocator {
+        println("uriConfig: $uriConfig")
         return builder.routes()
             .route { r ->
                 r
                     .path("/job-offers/**")
                     .uri(uriConfig.jobOffers)
             }
-            .route{r ->
+            .route { r ->
                 r
-                    .path("/applications/**")
-                    .uri(uriConfig.jobOffers)
+                    .path("/applications/*/messages/**")
+                    .uri(uriConfig.chat)
+            }
+            .route{r ->
+                 r
+                     .path("/applications/**")
+                     .uri(uriConfig.jobOffers)
             }
             .route { r ->
                 r

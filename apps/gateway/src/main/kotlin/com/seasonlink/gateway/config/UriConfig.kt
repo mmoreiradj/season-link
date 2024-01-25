@@ -14,4 +14,5 @@ data class UriConfig(
     val profiles: String,
     val ratings: String,
     val notifications: String,
+    val chat: String,
 )

@@ -16,3 +16,7 @@ seasonlink:
   services:
     companies: ${COMPANIES_SERVICE_URL}
     jobs: ${JOBS_SERVICE_URL}
+
+logging:
+  level:
+    web: debug
