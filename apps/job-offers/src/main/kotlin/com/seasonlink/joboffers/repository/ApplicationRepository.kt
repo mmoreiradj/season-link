@@ -13,4 +13,13 @@ interface ApplicationRepository: ReactiveCrudRepository<Application, UUID> {
         WHERE candidate_id = :candidateId
     """)
     fun findAllByCandidateId(candidateId: UUID): Flux<Application>
+
+    @Query("""
+        SELECT a.*
+        FROM application a
+        JOIN job_offer jo ON a.job_offer_id = jo.id
+        WHERE a.candidate_id = :candidateId
+          AND jo.company_id = :companyId
+    """)
+    fun findAllByCandidateIdAndCompanyId(candidateId: UUID, companyId: UUID): Flux<Application>
 }
