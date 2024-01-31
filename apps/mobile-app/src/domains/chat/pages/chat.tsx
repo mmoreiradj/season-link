@@ -4,7 +4,7 @@ import { Text } from 'react-native-paper';
 const ChatPage = () => {
   return (
     <View>
-      <Text>User onboarding page</Text>
+      <Text>Chat page</Text>
     </View>
   );
 };
