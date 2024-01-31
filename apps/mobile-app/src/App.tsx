@@ -8,7 +8,6 @@ import LoginPage from 'src/pages/login';
 import ProfileDeletePage from 'domains/profile/pages/profile-delete';
 import OnboardingPage from 'domains/profile/pages/profile-onboarding';
 import ScorePage from 'domains/profile/pages/profile-score';
-import SettingsPage from 'src/pages/profile-settings';
 import SignUpPage from 'src/pages/sign-up';
 import { useEffect, useState } from 'react';
 import { emptyTokens } from 'common/utils/tokens';
@@ -16,12 +15,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'common/store/store';
 import { emptyAuth, setAuth } from 'common/store/auth/authSlice';
 import JobPage from 'domains/job-offers/pages/job';
-import { HelloWorld } from 'common/components/HelloWorld';
+import { Home } from 'common/components/HelloWorld';
 import useAuthorizationWorkflow from 'domains/auth/hooks/useAthorizationWorkflow';
 import useTokenRefresher from 'domains/auth/hooks/useTokenRefresher';
 import AuthService from 'domains/auth/services/auth.service';
 import ChatDetailPage from 'domains/chat/pages/chat-detail';
 import ChatPage from 'domains/chat/pages/chat';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import SettingsPage from 'domains/profile/pages/profile-settings';
 
 export default function App() {
   const auth = useSelector((state: RootState) => state.auth);
@@ -72,12 +73,12 @@ export default function App() {
 
   return (
     <>
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <StatusBar style='auto' />
         {isLoading && <Text>Loading...</Text>}
         {!isLoading && (
           <Routes>
-            <Route path='/' Component={HelloWorld} />
+            <Route path='/' Component={Home} />
             <Route
               path='/login'
               element={<LoginPage promptAsync={promptAsync} />}
@@ -95,7 +96,7 @@ export default function App() {
             <Route path='/chat' Component={ChatPage} />
           </Routes>
         )}
-      </View>
+      </SafeAreaView>
     </>
   );
 }

@@ -1,42 +1,68 @@
-import { View } from 'react-native';
-import { Button, Text } from 'react-native-paper';
+import { StyleSheet, View } from 'react-native';
+import { BottomNavigation, Button, Text } from 'react-native-paper';
 import { emptyTokens } from 'common/utils/tokens';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'common/store/store';
 import { setAuth } from 'common/store/auth/authSlice';
 import { useNavigate } from 'react-router-native';
+import React from 'react';
+import HistoryPage from 'src/pages/history';
 
-export function HelloWorld() {
-  const user = useSelector((state: RootState) => state.user);
-  const auth = useSelector((state: RootState) => state.auth);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+import ScorePage from 'domains/profile/pages/profile-score';
+import JobPage from 'domains/job-offers/pages/job';
+import ChatPage from 'domains/chat/pages/chat';
+import SettingsPage from 'domains/profile/pages/profile-settings';
+
+export function Home() {
+  const [index, setIndex] = React.useState(0);
+  const [routes] = React.useState([
+    {
+      key: 'score',
+      title: 'Score',
+      focusedIcon: 'star',
+      unfocusedIcon: 'star-outline',
+    },
+    {
+      key: 'history',
+      title: 'History',
+      focusedIcon: 'book-account',
+      unfocusedIcon: 'book-account-outline',
+    },
+    {
+      key: 'jobs',
+      title: 'Jobs Offers',
+      focusedIcon: 'briefcase',
+      unfocusedIcon: 'briefcase-outline',
+    },
+    {
+      key: 'messages',
+      title: 'Messages',
+      focusedIcon: 'message',
+      unfocusedIcon: 'message-outline',
+    },
+    {
+      key: 'profile',
+      title: 'Profile',
+      focusedIcon: 'cog',
+      unfocusedIcon: 'cog-outline',
+    },
+  ]);
+
+  const renderScene = BottomNavigation.SceneMap({
+    score: ScorePage,
+    history: HistoryPage,
+    jobs: JobPage,
+    messages: ChatPage,
+    profile: SettingsPage,
+  });
 
   return (
-    <View>
-      <Text variant='displayLarge'>Hello World!</Text>
-      <Text>
-        Have you considered calling yourself "{user.fisrt_name} {user.last_name}
-        "?
-      </Text>
-      <Text>
-        You are currently {auth.accessToken ? 'logged in' : 'logged out'}.
-      </Text>
-      <Button
-        disabled={!auth.accessToken}
-        onPress={() => {
-          dispatch(
-            setAuth({
-              accessToken: null,
-              refreshToken: null,
-            })
-          );
-          emptyTokens();
-        }}
-      >
-        Logout
-      </Button>
-      <Button onPress={() => navigate('/jobs')}>Go to jobs</Button>
-    </View>
+    <BottomNavigation
+      shifting={true}
+      style={{ width: '100%' }}
+      navigationState={{ index, routes }}
+      onIndexChange={setIndex}
+      renderScene={renderScene}
+    />
   );
 }
