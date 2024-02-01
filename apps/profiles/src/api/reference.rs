@@ -48,16 +48,37 @@ pub async fn get_references(
     State(state): State<Arc<SharedState>>,
     Path(user_id): Path<Uuid>,
 ) -> axum::response::Result<Json<Vec<Reference>>, AppError> {
-    let result = sqlx::query_as::<_, Reference>(
+    Ok(Json(
+        get_references_from_candidate_id(state, user_id).await?,
+    ))
+}
+
+/// Retrive references from the logged in user
+pub async fn get_references_self(
+    State(state): State<Arc<SharedState>>,
+    AuthHeaders {
+        user_id: user_uuid,
+        roles: _,
+        request_id: _,
+    }: AuthHeaders,
+) -> axum::response::Result<Json<Vec<Reference>>, AppError> {
+    Ok(Json(
+        get_references_from_candidate_id(state, user_uuid).await?,
+    ))
+}
+
+async fn get_references_from_candidate_id(
+    state: Arc<SharedState>,
+    uuid: Uuid,
+) -> Result<Vec<Reference>, AppError> {
+    Ok(sqlx::query_as::<_, Reference>(
         "
     select id, first_name, last_name, email, phone_number, company_name from reference r
     where r.candidate_id=$1;",
     )
-    .bind(user_id)
+    .bind(uuid)
     .fetch_all(&state.pool)
-    .await?;
-
-    Ok(Json(result))
+    .await?)
 }
 
 /// Retrieve the reference inside the DB

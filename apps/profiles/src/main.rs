@@ -31,6 +31,7 @@ use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 use crate::api::{
     cv::{get_cv, get_cv_self},
     picture::get_candidate_picture,
+    reference::get_references_self,
 };
 
 mod api;
@@ -85,6 +86,7 @@ async fn main() -> anyhow::Result<()> {
 
     // Register the references
     router = router
+        .route("/user/me/references", get(get_references_self))
         .route("/user/:user_id/references", get(get_references))
         .route("/references", post(create_reference))
         .route(
