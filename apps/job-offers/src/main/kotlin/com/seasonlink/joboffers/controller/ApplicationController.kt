@@ -33,6 +33,15 @@ class ApplicationController(
         )
     )
 
+    @GetMapping("/applications/search")
+    fun searchApplications(
+        @RequestParam candidateId: UUID,
+        @RequestParam companyId: UUID
+    ): Flux<Application> = applicationService.search(
+        candidateId,
+        companyId
+    )
+
     @GetMapping("/applications/{applicationId}")
     fun findApplication(
         @PathVariable("applicationId") applicationId: UUID,

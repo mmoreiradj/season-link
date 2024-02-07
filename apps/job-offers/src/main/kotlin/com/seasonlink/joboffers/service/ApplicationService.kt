@@ -42,4 +42,7 @@ class ApplicationService(
                     ResponseStatusException(HttpStatus.NOT_FOUND, "Application does not exist")
                 )
             )
+
+    fun search(candidateId: UUID, companyId: UUID): Flux<Application>
+        = applicationRepository.findAllByCandidateIdAndCompanyId(candidateId, companyId)
 }

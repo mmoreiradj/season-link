@@ -1,0 +1,60 @@
+////////////////////////////////////////////////
+//            Source & generators             //
+////////////////////////////////////////////////
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["tracing"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+////////////////////////////////////////////////
+//            Model definitions               //
+////////////////////////////////////////////////
+model Company {
+  id            String          @id @default(uuid()) @db.Uuid
+  name          String
+  description   String
+  image         String
+  address       String
+  city          String
+  state         String
+  zip           String
+  country       String
+  website       String
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+  Recruiter     Recruiter[]
+  CompanyRating CompanyRating[]
+
+  @@map("companies")
+}
+
+model Recruiter {
+  id        String   @id @default(uuid()) @db.Uuid
+  companyId String   @map("company_id") @db.Uuid
+  company   Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  oidcId    String   @map("oidc_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("recruiters")
+}
+
+model CompanyRating {
+  id          String   @id @default(uuid()) @db.Uuid
+  companyId   String   @map("company_id") @db.Uuid
+  company     Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  candidateId String   @map("candidate_id")
+  rating      Int
+  comment     String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // only allow one rating per candidate per company
+  @@unique([companyId, candidateId])
+  @@map("company_ratings")
+}

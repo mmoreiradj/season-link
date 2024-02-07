@@ -118,7 +118,7 @@ services:
 
   job-offers:
     container_name: job-offers
-    command: ["./mvnw", "spring-boot:run"]
+    command: ["./mvnw", "spring-boot:run", "-DskipTests=true"]
     env_file:
       - ./apps/job-offers/.env
     build:
@@ -172,6 +172,31 @@ services:
           target: /app
         - action: sync+restart
           path: apps/chat/prisma/schema.prisma
+          target: /app
+
+  companies:
+    container_name: companies
+    env_file:
+      - ./apps/companies/.env
+    build:
+      context: apps/companies
+      dockerfile: Dockerfile
+      target: dev
+    restart: unless-stopped
+    develop:
+      watch:
+        - action: sync
+          path: apps/companies
+          target: /app
+          ignore: ["node_modules"]
+        - action: sync+restart
+          path: apps/companies/Dockerfile
+          target: /app
+        - action: sync+restart
+          path: apps/companies/package.json
+          target: /app
+        - action: sync+restart
+          path: apps/companies/prisma/schema.prisma
           target: /app
 
   mock:
