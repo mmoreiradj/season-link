@@ -103,15 +103,7 @@ services:
           path: apps/gateway
           target: /app
     healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--quiet",
-          "--tries=1",
-          "--spider",
-          "http://localhost:8080/actuator/health",
-        ]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -128,15 +120,7 @@ services:
     ports:
       - "8082:8080"
     healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--quiet",
-          "--tries=1",
-          "--spider",
-          "http://localhost:8080/actuator/health",
-        ]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
       interval: 10s
       timeout: 5s
       retries: 5
