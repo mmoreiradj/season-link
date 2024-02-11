@@ -199,6 +199,18 @@ services:
           path: apps/companies/prisma/schema.prisma
           target: /app
 
+  jobs:
+    build:
+      context: apps/jobs
+      dockerfile: dev.Dockerfile
+    env_file:
+      - ./apps/jobs/.env
+    develop:
+      watch:
+        - action: sync
+          path: apps/jobs
+          target: /app
+
   mock:
     build:
       context: apps/mock
