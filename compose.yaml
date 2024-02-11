@@ -211,25 +211,6 @@ services:
           path: apps/jobs
           target: /app
 
-  mock:
-    build:
-      context: apps/mock
-    volumes:
-      - ./apps/mock/data:/app/data
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--quiet",
-          "--tries=1",
-          "--spider",
-          "http://localhost:3000/jobs",
-        ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   profile-backend:
     image: season-link-profiles
     build: ./apps/profiles/
