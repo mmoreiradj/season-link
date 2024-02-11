@@ -260,6 +260,29 @@ services:
       - SERVER_PORT=5555
       - SERVER_IMAGE_BINARY=true
 
+  neo4j:
+    image: neo4j
+    environment:
+      - NEO4J_PLUGINS=["apoc", "apoc-extended"]
+      - NEO4J_AUTH=neo4j/password
+      - NEO4J_dbms_security_procedures_allowlist=gds.*, apoc.*
+      - NEO4J_dbms_security_procedures_unrestricted=gds.*, apoc.*
+    ports:
+      - 7474:7474
+      - 7473:7473
+      - 7687:7687
+    volumes:
+      - neo4j:/bitnami/neo4j
+
+  nats:
+    image: bitnami/nats:2.10.5
+    container_name: nats
+    ports:
+      - 4222:4222
+      - 6222:6222
+      - 8222:8222
+
 volumes:
   postgresql:
   minio_storage:
+  neo4j:

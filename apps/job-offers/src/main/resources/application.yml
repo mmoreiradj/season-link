@@ -20,3 +20,6 @@ seasonlink:
 logging:
   level:
     web: debug
+
+nats:
+  url: ${NATS_URL}

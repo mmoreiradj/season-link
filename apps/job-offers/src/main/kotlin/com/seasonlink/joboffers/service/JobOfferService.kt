@@ -15,7 +15,8 @@ import java.util.*
 class JobOfferService(
     private val jobOfferRepository: JobOfferRepository,
     private val jobService: JobService,
-    private val companyService: CompanyService
+    private val companyService: CompanyService,
+    private val natsService: NatsService
 ) {
 
     fun findAll(): Flux<JobOffer> = jobOfferRepository.findAll()
@@ -31,7 +32,11 @@ class JobOfferService(
             .onErrorResume(
                 WebClientResponseException.NotFound::class.java
             ) { throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Company does not exit") }
-    ).flatMap { jobOfferRepository.save(jobOffer.toModel()) }
+    )
+        .flatMap { jobOfferRepository.save(jobOffer.toModel()) }
+        .doOnNext {
+            natsService.publish("recommendations.job-offers.created", JobOffer.toJson(it))
+        }
 
     fun update(id: UUID, jobOffer: JobOfferDto): Mono<JobOffer> = Mono.zip(
         jobService.getById(jobOffer.jobId)

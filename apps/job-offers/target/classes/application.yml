@@ -1,21 +1,26 @@
 spring:
   r2dbc:
-    url: r2dbc:postgresql://postgresql:5432
-    name: joboffers
-    username: postgres
-    password: postgres
+    url: ${R2DBC_URL}
+    name: ${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
   flyway:
-    user: postgres
-    password: postgres
-    url: jdbc:postgresql://localhost:5432/joboffers
-  docker:
-    compose:
-      enabled: false
+    user: ${DB_USER}
+    password: ${DB_PASSWORD}
+    url: ${JDBC_URL}
+
+server:
+  port: ${SERVER_PORT}
 
 seasonlink:
   services:
-    companies: http://localhost:3000
-    jobs: http://localhost:3000
+    companies: ${COMPANIES_SERVICE_URL}
+    jobs: ${JOBS_SERVICE_URL}
 
-server:
-  port: 8080
+logging:
+  level:
+    web: debug
+
+nats:
+  spring:
+    server: ${NATS_SERVER}

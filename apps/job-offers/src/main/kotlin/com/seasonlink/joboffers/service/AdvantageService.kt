@@ -11,7 +11,7 @@ import java.util.stream.Collectors
 
 @Service
 class AdvantageService(
-    private val advantageRepository: AdvantageRepository
+    private val advantageRepository: AdvantageRepository,
 ) {
 
     fun findAllByJobOfferId(jobOfferId: UUID): Flux<Advantage> = advantageRepository
