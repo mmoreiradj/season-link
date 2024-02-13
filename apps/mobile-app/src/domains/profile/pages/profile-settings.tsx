@@ -5,23 +5,66 @@ import { useEffect } from 'react';
 import { View } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import { Button, List, Switch, Text, TextInput } from 'react-native-paper';
-import { DatePickerInput, DatePickerModal, it } from 'react-native-paper-dates';
+import {
+  DatePickerInput,
+  DatePickerModal,
+  it,
+  tr,
+} from 'react-native-paper-dates';
+import { ExperienceCard } from '../components/experience-card';
+import { useGetExperiencesQuery } from '../store/profile.api';
+import { ReferenceCard } from '../components/reference-card';
 
 const SettingsPage = () => {
-  const { data, error, isLoading } = useGetJobCategoriesQuery();
+  const {
+    data: jobCategoriesData,
+    error,
+    isLoading,
+  } = useGetJobCategoriesQuery();
+  const { data: experienceData, error: experienceError } =
+    useGetExperiencesQuery();
 
   useEffect(() => {
-    if (data) {
-      console.log(data);
-    }
-  }, [data]);
+    console.log({ jobCategoriesData, experienceData, experienceError });
+  }, [jobCategoriesData, experienceData, experienceData]);
 
-  return BasicInfoForm(data);
+  return (
+    <>
+      {BasicInfoForm(jobCategoriesData)}
+      {ExperienceCard({
+        actionEnabled: true,
+        experience: {
+          id: '1eeccba4-79b1-47d2-9c0d-0b6b5f98369a',
+          candidate_id: '2eb20f1f-ee44-4e4f-9213-c2e343e00f3c',
+          company_name: 'Acme Corporation',
+          job_id: 'debe1c49-5420-4e1c-a140-a75dcea7ea92',
+          start_time: '2022-01-01',
+          end_time: '2023-01-01',
+          description: 'Worked as a software engineer on various projects.',
+        },
+        onDelete: () => {
+          console.log('Delete fuckers');
+        },
+      })}
+      {ReferenceCard({
+        actionEnabled: true,
+        onDelete: console.log,
+        reference: {
+          id: '1eeccba4-79b1-47d2-9c0d-0b6b5f98369a',
+          company_name: 'Acme Corporation',
+          first_name: 'first',
+          last_name: 'last',
+          email: 'toto@gmail.com',
+          phone_number: '+33781272138',
+        },
+      })}
+    </>
+  );
 };
 
 const ExperienceForm = () => {};
 
-const BasicInfoForm = (data: JobCategoryType[] | undefined) => {
+const BasicInfoForm = (data: JobCategoryType[] | undefined) => (
   <Formik
     initialValues={{
       firstName: '',
@@ -155,7 +198,7 @@ const BasicInfoForm = (data: JobCategoryType[] | undefined) => {
         </View>
       </List.AccordionGroup>
     )}
-  </Formik>;
-};
+  </Formik>
+);
 
 export default SettingsPage;
