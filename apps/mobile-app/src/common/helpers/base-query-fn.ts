@@ -1,12 +1,14 @@
+import { FetchBaseQueryArgs } from '@reduxjs/toolkit/dist/query/fetchBaseQuery';
 import camelcaseKeys from 'camelcase-keys';
 import config from 'common/config/config';
 import { RootState } from 'common/store/store';
 
 type GetStateFn = () => unknown;
 
-const baseQueryConfig = {
+const baseQueryConfig: FetchBaseQueryArgs = {
   responseHandler: async (response: Response) =>
     camelcaseKeys(await response.json(), { deep: true }),
+
   baseUrl: config.api.baseUrl,
   timeout: 10000,
   prepareHeaders: (

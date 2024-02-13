@@ -99,7 +99,7 @@ async fn main() -> anyhow::Result<()> {
     // Register the experiences
     router = router
         .route("/user/:user_id/experiences", get(get_experiences))
-        .route("/experience", post(create_experience))
+        .route("/experiences", post(create_experience))
         .route(
             "/experience/:experience_id",
             get(get_experience)
