@@ -11,7 +11,7 @@ CREATE TABLE "companies" (
     "country" TEXT NOT NULL,
     "website" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "companies_pkey" PRIMARY KEY ("id")
 );
@@ -22,7 +22,7 @@ CREATE TABLE "recruiters" (
     "company_id" UUID NOT NULL,
     "oidc_id" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "recruiters_pkey" PRIMARY KEY ("id")
 );
@@ -35,7 +35,7 @@ CREATE TABLE "company_ratings" (
     "rating" INTEGER NOT NULL,
     "comment" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "company_ratings_pkey" PRIMARY KEY ("id")
 );
