@@ -30,6 +30,7 @@ use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 
 use crate::api::{
     cv::{get_cv, get_cv_self},
+    experience::get_experiences_self,
     picture::get_candidate_picture,
     reference::get_references_self,
 };
@@ -70,27 +71,33 @@ async fn main() -> anyhow::Result<()> {
 
     // Register the users
     router = router
-        .route("/user", post(create_candidate))
-        .route("/users", get(get_candidates))
-        .route("/user/me", put(update_candidate).get(get_candidate_self))
+        .route("/profiles/user", post(create_candidate))
+        .route("/profiles/users", get(get_candidates))
         .route(
-            "/user/:user_id",
+            "/profiles/user/me",
+            put(update_candidate).get(get_candidate_self),
+        )
+        .route(
+            "/profiles/user/:user_id",
             get(get_candidate).delete(delete_candidate.layer(middleware::from_fn(is_admin))),
         )
-        .route("/user/:user_id/picture", get(get_candidate_picture));
+        .route(
+            "/profiles/user/:user_id/picture",
+            get(get_candidate_picture),
+        );
 
     // Register the user files operations
     router = router
-        .route("/user/me/cv", post(post_cv).get(get_cv_self))
-        .route("/user/:user_id/cv", get(get_cv));
+        .route("/profiles/user/me/cv", post(post_cv).get(get_cv_self))
+        .route("/profiles/user/:user_id/cv", get(get_cv));
 
     // Register the references
     router = router
-        .route("/user/me/references", get(get_references_self))
-        .route("/user/:user_id/references", get(get_references))
-        .route("/references", post(create_reference))
+        .route("/profiles/user/me/references", get(get_references_self))
+        .route("/profiles/user/:user_id/references", get(get_references))
+        .route("/profiles/references", post(create_reference))
         .route(
-            "/reference/:reference_id",
+            "/profiles/reference/:reference_id",
             get(get_reference)
                 .delete(delete_reference)
                 .put(update_reference),
@@ -98,10 +105,11 @@ async fn main() -> anyhow::Result<()> {
 
     // Register the experiences
     router = router
-        .route("/user/:user_id/experiences", get(get_experiences))
-        .route("/experiences", post(create_experience))
+        .route("/profiles/user/me/experiences", get(get_experiences_self))
+        .route("/profiles/user/:user_id/experiences", get(get_experiences))
+        .route("/profiles/experiences", post(create_experience))
         .route(
-            "/experience/:experience_id",
+            "/profiles/experience/:experience_id",
             get(get_experience)
                 .delete(delete_experience)
                 .put(update_experience),
