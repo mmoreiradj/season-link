@@ -8,6 +8,7 @@ use aws_sdk_s3::{
 use axum::{
     extract::{Multipart, Path, State},
     response::IntoResponse,
+    Json,
 };
 use uuid::Uuid;
 
@@ -71,6 +72,45 @@ pub async fn get_cv_self(
     Ok(axum::response::IntoResponse::into_response(
         get_user_cv(&state.s3_client, &user_id).await?.into_bytes(),
     ))
+}
+
+/// Get whether the candidate has an uploaded a cv
+pub async fn has_uploaded_cv_self(
+    State(state): State<Arc<SharedState>>,
+    AuthHeaders {
+        user_id,
+        roles: _,
+        request_id: _,
+    }: AuthHeaders,
+) -> Result<impl IntoResponse, AppError> {
+    Ok(Json(
+        has_uploaded_cv_from_id(&state.s3_client, &user_id).await,
+    ))
+}
+
+/// Get whether the candidate has an uploaded a cv
+pub async fn has_uploaded_cv(
+    State(state): State<Arc<SharedState>>,
+    Path(user_id): Path<Uuid>,
+) -> Result<impl IntoResponse, AppError> {
+    Ok(Json(
+        has_uploaded_cv_from_id(&state.s3_client, &user_id).await,
+    ))
+}
+
+/// Get whether the candidate has uploaded a CV
+async fn has_uploaded_cv_from_id(client: &Client, candidate_id: &Uuid) -> bool {
+    let result = client
+        .head_object()
+        .bucket(get_bucket_name())
+        .key(get_cv_filename_from_user(candidate_id))
+        .send()
+        .await;
+
+    match result {
+        Ok(_) => true,
+        Err(bad_result) => !bad_result.into_service_error().is_not_found(),
+    }
 }
 
 /// Get the file from the bucket, then use the user

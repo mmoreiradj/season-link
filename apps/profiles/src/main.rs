@@ -29,7 +29,7 @@ use axum::{
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 
 use crate::api::{
-    cv::{get_cv, get_cv_self},
+    cv::{get_cv, get_cv_self, has_uploaded_cv, has_uploaded_cv_self},
     experience::get_experiences_self,
     picture::get_candidate_picture,
     reference::get_references_self,
@@ -89,7 +89,10 @@ async fn main() -> anyhow::Result<()> {
     // Register the user files operations
     router = router
         .route("/profiles/user/me/cv", post(post_cv).get(get_cv_self))
-        .route("/profiles/user/:user_id/cv", get(get_cv));
+        .route("/profiles/user/:user_id/cv", get(get_cv))
+        // FIXME I should have used the HEAD verb instead
+        .route("/profiles/user/me/cv/exists", get(has_uploaded_cv_self))
+        .route("/profiles/user/:user_id/cv/exists", get(has_uploaded_cv));
 
     // Register the references
     router = router
