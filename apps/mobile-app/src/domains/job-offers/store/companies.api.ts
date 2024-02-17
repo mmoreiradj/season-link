@@ -11,7 +11,11 @@ export const companiesApi = createApi({
     getCompany: builder.query<CompanyType, string>({
       query: (id: string) => `/companies/${id}`,
     }),
+
+    getCompanies: builder.query<CompanyType[], void>({
+      query: () => '/companies',
+    }),
   }),
 });
 
-export const { useGetCompanyQuery } = companiesApi;
+export const { useGetCompanyQuery, useGetCompaniesQuery } = companiesApi;

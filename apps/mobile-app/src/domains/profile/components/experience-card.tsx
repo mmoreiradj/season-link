@@ -19,7 +19,10 @@ export const ExperienceCard = (props: ExperienceCardProps) => {
   }, [data, error]);
 
   return (
-    <Card onPress={() => setExtended((previousValue) => !previousValue)}>
+    <Card
+      onPress={() => setExtended((previousValue) => !previousValue)}
+      style={{ marginBottom: 10 }}
+    >
       <Card.Content>
         <Text variant='titleLarge'>
           {data?.title ?? props.experience.job_id}
@@ -30,15 +33,15 @@ export const ExperienceCard = (props: ExperienceCardProps) => {
         </Text>
         <Text>{props.experience.description}</Text>
       </Card.Content>
-      {isExtended && props.actionEnabled ? (
-        <Card.Actions>
+      <Card.Actions>
+        {isExtended && props.actionEnabled ? (
           <Button onPress={() => props.onDelete(props.experience.id)}>
             Delete
           </Button>
-        </Card.Actions>
-      ) : (
-        ''
-      )}
+        ) : (
+          ''
+        )}
+      </Card.Actions>
     </Card>
   );
 };
