@@ -63,7 +63,7 @@ services:
       KEYCLOAK_NEW_CLIENT_SECRET: mobile-app
       KEYCLOAK_NEW_USER: contact@season-link.com
       KEYCLOAK_NEW_PASSWORD: contact
-      KEYCLOAK_VALID_REDIRECT_URIS: '["http://localhost:4354/*", "http://127.0.0.1:4354/*", "exp://127.0.0.1:4354/*"]'
+      KEYCLOAK_VALID_REDIRECT_URIS: '["http://localhost:8080/*", "http://localhost:4354/*", "http://127.0.0.1:4354/*", "exp://127.0.0.1:4354/*"]'
       KEYCLOAK_SMTP_HOST: mailhog
       KEYCLOAK_SMTP_PORT: 587
       KEYCLOAK_SMTP_USER: seasonlink

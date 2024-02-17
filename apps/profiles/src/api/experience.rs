@@ -40,7 +40,7 @@ pub async fn create_experience(
     Ok(Json(experience))
 }
 
-pub async fn get_experiences(
+pub async fn get_experiences_self(
     State(state): State<Arc<SharedState>>,
     AuthHeaders {
         user_id: user_uuid,
@@ -48,16 +48,32 @@ pub async fn get_experiences(
         request_id: _,
     }: AuthHeaders,
 ) -> axum::response::Result<Json<Vec<Experience>>, AppError> {
-    let result = sqlx::query_as::<_, Experience>(
+    Ok(Json(
+        get_experiences_from_candidate_id(state, user_uuid).await?,
+    ))
+}
+
+pub async fn get_experiences(
+    State(state): State<Arc<SharedState>>,
+    Path(user_uuid): Path<Uuid>,
+) -> axum::response::Result<Json<Vec<Experience>>, AppError> {
+    Ok(Json(
+        get_experiences_from_candidate_id(state, user_uuid).await?,
+    ))
+}
+
+async fn get_experiences_from_candidate_id(
+    state: Arc<SharedState>,
+    uuid: Uuid,
+) -> Result<Vec<Experience>, AppError> {
+    Ok(sqlx::query_as::<_, Experience>(
         "select id, company_name, job_id, start_time, end_time, description
     FROM experience e
-    WHERE e.candidate_id=$2;",
+    WHERE e.candidate_id=$1;",
     )
-    .bind(user_uuid)
+    .bind(uuid)
     .fetch_all(&state.pool)
-    .await?;
-
-    Ok(Json(result))
+    .await?)
 }
 
 pub async fn get_experience(
@@ -97,7 +113,7 @@ pub async fn update_experience(
     let result = sqlx::query(
         "UPDATE reference
         SET company_name=$1, job_id=$2, start_time=$3, end_time=$4, description=$5
-        WHERE id=$6 and candidate=$7;",
+        WHERE id=$6 and candidate_id=$7;",
     )
     .bind(reference_id)
     .bind(user_uuid)
