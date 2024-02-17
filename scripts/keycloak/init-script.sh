@@ -121,6 +121,12 @@ kcadm.sh create roles \
     -s name=admin \
     -s 'description=Admin role'
 
+kcadm.sh create roles \
+    --config /tmp/config \
+    -r "$KEYCLOAK_NEW_REALM" \
+    -s name=recruiter \
+    -s 'description=Recruiter role'
+
 kcadm.sh add-roles \
     --rname candidate \
     --cclientid "$KEYCLOAK_NEW_CLIENT_ID" \
