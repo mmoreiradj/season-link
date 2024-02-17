@@ -22,7 +22,10 @@ export const ReferenceCard = (props: ExperienceCardProps) => {
   */
 
   return (
-    <Card onPress={() => setExtended((previousValue) => !previousValue)}>
+    <Card
+      onPress={() => setExtended((previousValue) => !previousValue)}
+      style={{ marginBottom: 10 }}
+    >
       <Card.Content>
         <Text variant='titleLarge'>
           {props.reference.first_name} {props.reference.last_name}
@@ -33,15 +36,15 @@ export const ReferenceCard = (props: ExperienceCardProps) => {
         </Text>
         <Text>{props.reference.email}</Text>
       </Card.Content>
-      {isExtended && props.actionEnabled ? (
-        <Card.Actions>
+      <Card.Actions>
+        {isExtended && props.actionEnabled ? (
           <Button onPress={() => props.onDelete(props.reference.id)}>
             Delete
           </Button>
-        </Card.Actions>
-      ) : (
-        ''
-      )}
+        ) : (
+          ''
+        )}
+      </Card.Actions>
     </Card>
   );
 };

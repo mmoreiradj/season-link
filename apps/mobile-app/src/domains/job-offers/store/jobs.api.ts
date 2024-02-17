@@ -11,7 +11,9 @@ export const jobsApi = createApi({
     getJob: builder.query<JobType, string>({
       query: (id: string) => `/jobs/${id}`,
     }),
+
+    getJobs: builder.query<JobType[], void>({ query: () => '/jobs' }),
   }),
 });
 
-export const { useGetJobQuery } = jobsApi;
+export const { useGetJobQuery, useGetJobsQuery } = jobsApi;

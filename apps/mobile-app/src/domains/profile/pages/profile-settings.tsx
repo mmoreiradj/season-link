@@ -1,10 +1,18 @@
 import { useGetJobCategoriesQuery } from 'domains/job-categories/store/job-category.api';
 import JobCategoryType from 'domains/job-categories/types/job-category.type';
 import { Formik } from 'formik';
-import { useEffect } from 'react';
-import { View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ScrollView, View } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
-import { Button, List, Switch, Text, TextInput } from 'react-native-paper';
+import {
+  Appbar,
+  Button,
+  Divider,
+  List,
+  Switch,
+  Text,
+  TextInput,
+} from 'react-native-paper';
 import {
   DatePickerInput,
   DatePickerModal,
@@ -12,193 +20,132 @@ import {
   tr,
 } from 'react-native-paper-dates';
 import { ExperienceCard } from '../components/experience-card';
-import { useGetExperiencesQuery } from '../store/profile.api';
+import {
+  useCreateExperienceMutation,
+  useCreateReferenceMutation,
+  useDeleteExperienceMutation,
+  useDeleteReferenceMutation,
+  useGetCandidateQuery,
+  useGetExperiencesQuery,
+  useGetReferencesQuery,
+} from '../store/profile.api';
 import { ReferenceCard } from '../components/reference-card';
+import { ExperienceForm } from '../components/experience-form';
+import { ReferenceForm } from '../components/reference-form';
+import { BasicInfoForm } from '../components/basic-info-form';
 
 const SettingsPage = () => {
-  const {
-    data: jobCategoriesData,
-    error,
-    isLoading,
-  } = useGetJobCategoriesQuery();
+  const [isExperienceFormVisible, setExperienceFormVisible] = useState(false);
   const { data: experienceData, error: experienceError } =
     useGetExperiencesQuery();
+  const [deleteExperience, result] = useDeleteExperienceMutation();
+  const [createExperience, createResult] = useCreateExperienceMutation();
+
+  const [isReferenceFormVisible, setReferenceFormVisible] = useState(false);
+  const { data: referenceData, error: referenceError } =
+    useGetReferencesQuery();
+  const [deleteReference, deleteReferenceResult] = useDeleteReferenceMutation();
+  const [createReference, createReferenceResult] = useCreateReferenceMutation();
 
   useEffect(() => {
-    console.log({ jobCategoriesData, experienceData, experienceError });
-  }, [jobCategoriesData, experienceData, experienceData]);
+    console.log({ experienceData, experienceError });
+  }, [experienceData, experienceData]);
 
   return (
     <>
-      {BasicInfoForm(jobCategoriesData)}
-      {ExperienceCard({
-        actionEnabled: true,
-        experience: {
-          id: '1eeccba4-79b1-47d2-9c0d-0b6b5f98369a',
-          candidate_id: '2eb20f1f-ee44-4e4f-9213-c2e343e00f3c',
-          company_name: 'Acme Corporation',
-          job_id: 'debe1c49-5420-4e1c-a140-a75dcea7ea92',
-          start_time: '2022-01-01',
-          end_time: '2023-01-01',
-          description: 'Worked as a software engineer on various projects.',
-        },
-        onDelete: () => {
-          console.log('Delete fuckers');
-        },
-      })}
-      {ReferenceCard({
-        actionEnabled: true,
-        onDelete: console.log,
-        reference: {
-          id: '1eeccba4-79b1-47d2-9c0d-0b6b5f98369a',
-          company_name: 'Acme Corporation',
-          first_name: 'first',
-          last_name: 'last',
-          email: 'toto@gmail.com',
-          phone_number: '+33781272138',
-        },
-      })}
+      <Appbar.Header>
+        <Appbar.Content title='Settings' />
+      </Appbar.Header>
+      <Divider />
+
+      <ScrollView>
+        <BasicInfoForm onSubmit={console.log} />
+
+        <Divider />
+
+        {/* List of experiences, with the possibility to add/delete experience */}
+
+        <Text variant='titleLarge' style={{ margin: 10 }}>
+          Experiences
+        </Text>
+
+        <View style={{ margin: 20, marginTop: 0 }}>
+          <Button
+            onPress={() => setExperienceFormVisible(true)}
+            mode='contained'
+            style={{ marginBottom: 10 }}
+          >
+            Add new experience
+          </Button>
+
+          {experienceData?.map((experience) => (
+            <ExperienceCard
+              key={experience.id}
+              experience={experience}
+              actionEnabled={true}
+              onDelete={(uuid) => {
+                deleteExperience(uuid);
+              }}
+            />
+          ))}
+        </View>
+
+        <Divider />
+
+        {/* List of references, with the possibility to add/delete reference */}
+
+        <Text variant='titleLarge' style={{ margin: 10 }}>
+          References
+        </Text>
+
+        <View style={{ margin: 20, marginTop: 0 }}>
+          <Button
+            onPress={() => setReferenceFormVisible(true)}
+            mode='contained'
+            style={{ marginBottom: 10 }}
+          >
+            Add new reference
+          </Button>
+
+          {referenceData?.map((reference) => (
+            <ReferenceCard
+              key={reference.id}
+              reference={reference}
+              actionEnabled={true}
+              onDelete={(uuid) => {
+                deleteReference(uuid);
+              }}
+            />
+          ))}
+        </View>
+
+        {/* Forms are at the bottom, display handled via states */}
+        <ExperienceForm
+          experience={null}
+          visible={isExperienceFormVisible}
+          onSubmit={(newExperience) => {
+            createExperience(newExperience);
+            setExperienceFormVisible(false);
+          }}
+          onCancel={() => {
+            setExperienceFormVisible(false);
+          }}
+        />
+
+        <ReferenceForm
+          reference={null}
+          visible={isReferenceFormVisible}
+          onSubmit={(newReference) => {
+            createReference(newReference);
+            setReferenceFormVisible(false);
+          }}
+          onCancel={() => {
+            setReferenceFormVisible(false);
+          }}
+        />
+      </ScrollView>
     </>
   );
 };
-
-const ExperienceForm = () => {};
-
-const BasicInfoForm = (data: JobCategoryType[] | undefined) => (
-  <Formik
-    initialValues={{
-      firstName: '',
-      lastName: '',
-      birthDate: new Date(Date.now()),
-      nationality: '',
-      description: '',
-      email: '',
-      phoneNumber: '',
-      address: '',
-      gender: 0,
-      isAvailable: false,
-      availableFrom: new Date(Date.now()),
-      availableTo: new Date(Date.now()),
-      place: '',
-      jobId: '',
-    }}
-    onSubmit={(values) => console.log(values)}
-  >
-    {({ handleChange, handleBlur, handleSubmit, values, setFieldValue }) => (
-      <List.AccordionGroup>
-        {/* Basic info part */}
-        <List.Accordion title='Accordion 1' id='1'>
-          <View>
-            <TextInput
-              label={'First Name'}
-              onChangeText={handleChange('firstName')}
-              onBlur={handleBlur('firstName')}
-              value={values.firstName}
-            />
-
-            <TextInput
-              label={'Last Name'}
-              onChangeText={handleChange('lastName')}
-              onBlur={handleBlur('lastName')}
-              value={values.lastName}
-            />
-
-            <View style={{ height: 70 }}>
-              <DatePickerInput
-                locale='en'
-                label='Birthdate'
-                value={values.birthDate}
-                onChange={(d) => setFieldValue('birthDate', d)}
-                inputMode='start'
-                style={{ width: 400 }}
-                mode='flat'
-              />
-            </View>
-
-            <TextInput
-              label={'Nationality'}
-              onChangeText={handleChange('nationality')}
-              onBlur={handleBlur('nationality')}
-              value={values.nationality}
-            />
-
-            <TextInput
-              label={'Some words about you'}
-              onChangeText={handleChange('description')}
-              onBlur={handleBlur('description')}
-              value={values.nationality}
-            />
-          </View>
-        </List.Accordion>
-        <List.Accordion title='Accordion 2' id='2'>
-          <View>
-            <View>
-              <Text>Are you available ?</Text>
-              <Switch
-                value={values.isAvailable}
-                onValueChange={(e) => {
-                  setFieldValue('isAvailable', e);
-                }}
-              />
-            </View>
-
-            <View style={{ height: 70 }}>
-              <DatePickerInput
-                locale='en'
-                label='From'
-                value={values.availableFrom}
-                onChange={(d) => setFieldValue('availableFrom', d)}
-                inputMode='start'
-                style={{ width: 400 }}
-              />
-            </View>
-
-            <View style={{ height: 70 }}>
-              <DatePickerInput
-                locale='en'
-                label='To'
-                value={values.availableTo}
-                onChange={(d) => setFieldValue('availableTo', d)}
-                inputMode='start'
-                style={{ width: 400 }}
-              />
-            </View>
-
-            <TextInput
-              label={'Place'}
-              onChangeText={handleChange('place')}
-              onBlur={handleBlur('place')}
-              value={values.place}
-            />
-
-            {data ? (
-              <View>
-                <Dropdown
-                  data={data.map((jobCategory) => ({
-                    label: jobCategory.title,
-                    value: jobCategory.id,
-                  }))}
-                  labelField={'label'}
-                  valueField={'value'}
-                  onChange={(item) => {
-                    setFieldValue('jobId', item.value);
-                  }}
-                  value={values.jobId}
-                />
-              </View>
-            ) : (
-              ''
-            )}
-          </View>
-        </List.Accordion>
-        <View>
-          <List.Accordion title='Accordion 3' id='3'>
-            <List.Item title='Item 3' />
-          </List.Accordion>
-        </View>
-      </List.AccordionGroup>
-    )}
-  </Formik>
-);
 
 export default SettingsPage;

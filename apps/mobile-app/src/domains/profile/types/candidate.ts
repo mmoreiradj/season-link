@@ -13,7 +13,7 @@ type CandidateType = {
 
   is_available: boolean;
   available_from: string;
-  available_To: string;
+  available_to: string;
   place: string;
   job_id: string;
 };
