@@ -4,6 +4,7 @@ use aws_sdk_s3::{
 };
 use dotenvy::dotenv;
 use std::{env, sync::Arc};
+use tower_http::trace::TraceLayer;
 
 use api::{
     candidate::{
@@ -121,19 +122,26 @@ async fn main() -> anyhow::Result<()> {
     // Register fallback
     router = router.fallback(handler_404);
 
+    // Logging
+    router = router.layer(TraceLayer::new_for_http());
+
     let app = router.with_state(shared_pool);
 
     // run it with hyper on localhost:3000
     println!("Binding server port {}", &server_port);
+    let address = String::from("0.0.0.0:") + &server_port;
 
-    axum::Server::bind(
-        &(String::from("0.0.0.0:") + &server_port)
-            .parse()
-            .expect("Malformed server url !"),
-    )
-    .serve(app.into_make_service())
-    .await
-    .unwrap();
+    let listener = tokio::net::TcpListener::bind(&address).await.unwrap();
+    axum::serve(listener, app).await.unwrap();
+
+    // axum::Server::bind(
+    //     &(String::from("0.0.0.0:") + &server_port)
+    //         .parse()
+    //         .expect("Malformed server url !"),
+    // )
+    // .serve(app.into_make_service())
+    // .await
+    // .unwrap();
 
     Ok(())
 }
