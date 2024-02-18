@@ -2,7 +2,7 @@ use std::{env, sync::Arc};
 
 use axum::{
     extract::{Path, State},
-    http::HeaderValue,
+    http::{self, HeaderName, HeaderValue},
     response::IntoResponse,
 };
 use hex_color::HexColor;
@@ -99,9 +99,12 @@ pub async fn get_candidate_picture(
     // Sadly it handle only specific files format instead or raw bytes.
     let mut response = axum::response::IntoResponse::into_response(result);
     let headers = response.headers_mut();
-    headers.insert(header::CONTENT_TYPE, HeaderValue::from_static("image/png"));
     headers.insert(
-        header::CONTENT_DISPOSITION,
+        http::header::CONTENT_TYPE,
+        HeaderValue::from_static("image/png"),
+    );
+    headers.insert(
+        http::header::CONTENT_DISPOSITION,
         HeaderValue::from_static("image/png"),
     );
 

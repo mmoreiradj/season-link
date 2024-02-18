@@ -1,20 +1,18 @@
-
-
-use axum::{http::{Request}, middleware::Next, response::Response};
-use anyhow::anyhow;
 use crate::api::utils::AppError;
+use anyhow::anyhow;
+use axum::{extract::Request, middleware::Next, response::Response};
 
 use super::auth_headers::{AuthHeaders, Role};
 
 /// Check whether the user is an admin
-pub async fn is_admin<T>(
+pub async fn is_admin(
     AuthHeaders {
         user_id: _,
         roles,
         request_id: _,
     }: AuthHeaders,
-    request: Request<T>,
-    next: Next<T>,
+    request: Request,
+    next: Next,
 ) -> Result<Response, AppError> {
     // Can probably be generalized for roles
     if !roles.iter().any(|role| *role == Role::Admin) {

@@ -10,7 +10,7 @@ export const PROFILES_API_REDUCER_KEY = 'profileApi';
 
 export const profilesApi = createApi({
   reducerPath: PROFILES_API_REDUCER_KEY,
-  tagTypes: ['Experience', 'Reference', 'Candidate'],
+  tagTypes: ['Experience', 'Reference', 'Candidate', 'CV'],
   baseQuery: fetchBaseQuery({ ...baseQueryConfig, responseHandler: undefined }),
   endpoints: (builder) => ({
     createCandidate: builder.mutation<CandidateType, CreateCandidateType>({
@@ -38,13 +38,22 @@ export const profilesApi = createApi({
 
     //TODO get cv !
     //getCV: builder
-    uploadCV: builder.mutation({
+    uploadCV: builder.mutation<void, FormData>({
       query: (body) => ({
         url: '/profiles/user/me/cv',
         method: 'POST',
         body,
         FormData: true,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       }),
+      invalidatesTags: [{ type: 'CV', id: 'EXISTS' }],
+    }),
+
+    hasCV: builder.query<boolean, void>({
+      query: () => `/profiles/user/me/cv/exists`,
+      providesTags: (result) => [{ type: 'CV', id: 'EXISTS' }],
     }),
 
     // References section
@@ -134,6 +143,7 @@ export const {
   useUpdateCandidateMutation,
   useGetCandidateQuery,
   useUploadCVMutation,
+  useHasCVQuery,
   useGetReferencesQuery,
   useCreateReferenceMutation,
   useUpdateReferenceMutation,

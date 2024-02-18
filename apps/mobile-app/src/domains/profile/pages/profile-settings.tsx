@@ -28,11 +28,15 @@ import {
   useGetCandidateQuery,
   useGetExperiencesQuery,
   useGetReferencesQuery,
+  useHasCVQuery,
+  useUploadCVMutation,
 } from '../store/profile.api';
 import { ReferenceCard } from '../components/reference-card';
 import { ExperienceForm } from '../components/experience-form';
 import { ReferenceForm } from '../components/reference-form';
 import { BasicInfoForm } from '../components/basic-info-form';
+import * as DocumentPicker from 'expo-document-picker';
+import { use } from 'i18next';
 
 const SettingsPage = () => {
   const [isExperienceFormVisible, setExperienceFormVisible] = useState(false);
@@ -47,9 +51,12 @@ const SettingsPage = () => {
   const [deleteReference, deleteReferenceResult] = useDeleteReferenceMutation();
   const [createReference, createReferenceResult] = useCreateReferenceMutation();
 
+  const { data: hasCVData, error: hasCVError } = useHasCVQuery();
+  const [uploadCV, uploadCVResult] = useUploadCVMutation();
+
   useEffect(() => {
-    console.log({ experienceData, experienceError });
-  }, [experienceData, experienceData]);
+    console.log(uploadCVResult);
+  }, [uploadCVResult]);
 
   return (
     <>
@@ -117,6 +124,39 @@ const SettingsPage = () => {
               }}
             />
           ))}
+        </View>
+
+        <Divider />
+
+        {/* CV upload */}
+        <Text variant='titleLarge' style={{ margin: 10 }}>
+          CV
+        </Text>
+
+        <View style={{ margin: 20, marginTop: 0 }}>
+          <Button
+            onPress={() => {
+              DocumentPicker.getDocumentAsync({
+                type: 'application/pdf',
+              }).then((result) => {
+                if (result.canceled === false) {
+                  console.log(result.assets[0]);
+                  const formData = new FormData();
+                  formData.append('file', {
+                    name: result.assets[0].name,
+                    type: 'application/pdf',
+                    uri: result.assets[0].uri,
+                  } as any); // FIXME bad type
+
+                  uploadCV(formData);
+                }
+              });
+            }}
+            mode='contained'
+            style={{ marginBottom: 10 }}
+          >
+            Upload new CV
+          </Button>
         </View>
 
         {/* Forms are at the bottom, display handled via states */}

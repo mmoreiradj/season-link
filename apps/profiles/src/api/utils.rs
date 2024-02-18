@@ -1,4 +1,4 @@
-use std::{env};
+use std::env;
 
 use anyhow::anyhow;
 
@@ -7,14 +7,11 @@ use axum::{
     response::{IntoResponse, Response},
 };
 
-
 use serde_json::json;
-use sqlx::{postgres::PgQueryResult};
+use sqlx::postgres::PgQueryResult;
 use uuid::Uuid;
 
-
-
-use super::dtos::candidate::{CreateCandidate};
+use super::dtos::candidate::CreateCandidate;
 
 // Make our own error that wraps `anyhow::Error`.
 pub struct AppError(pub anyhow::Error);
@@ -78,7 +75,7 @@ pub async fn is_job_uuid_valid(job_id: &Uuid) -> Result<bool, AppError> {
     let root_url = env::var("job_service_url").expect("No job service URL !");
     let response = reqwest::get(root_url + "/jobs/" + &job_id.to_string()).await?;
     println!("Job check: {}", &response.status());
-    Ok(StatusCode::is_success(&response.status()))
+    Ok(reqwest::StatusCode::is_success(&response.status()))
 }
 
 /// Get the token to execute operations on the IDP
