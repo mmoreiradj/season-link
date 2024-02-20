@@ -1,0 +1,13 @@
+name: On Tag
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    permissions:
+      packages: write
+    name: Build
+    uses: mmoreiradj/season-link/.github/workflows/build-all.yaml@make/ci
