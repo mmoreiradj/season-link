@@ -13,7 +13,7 @@ FROM base AS build
 
 RUN ./mvnw package -DskipTests
 
-FROM eclipse-temurin:17-jre-alpine AS base
+FROM eclipse-temurin:17-jre-alpine AS prod
 
 WORKDIR /app
 
