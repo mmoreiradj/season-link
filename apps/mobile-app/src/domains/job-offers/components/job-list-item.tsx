@@ -8,15 +8,15 @@ import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { setSelectedJobOffer } from '../store/job-offers.slice';
 
-type Props = {
+type JobListItemProps = {
   jobOffer: JobOfferType;
+  onSelected: (jobOffer: JobOfferType) => void;
 };
 
-export default function JobListItem({ jobOffer }: Props) {
-  const dispatch = useDispatch();
-  const { data: job, error: jobError } = useGetJobQuery(jobOffer.jobId);
+export default function JobListItem(props: JobListItemProps) {
+  const { data: job, error: jobError } = useGetJobQuery(props.jobOffer.jobId);
   const { data: company, error: companyError } = useGetCompanyQuery(
-    jobOffer.companyId
+    props.jobOffer.companyId
   );
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function JobListItem({ jobOffer }: Props) {
   if (job && company) {
     return (
       <TouchableRipple
-        onPress={() => dispatch(setSelectedJobOffer(jobOffer))}
+        onPress={() => props.onSelected(props.jobOffer)}
         rippleColor='rgba(0, 0, 0, .1)'
       >
         <Card.Title

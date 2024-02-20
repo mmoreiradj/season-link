@@ -6,14 +6,24 @@ export const COMPANIES_API_REDUCER_KEY = 'companiesApi';
 
 export const companiesApi = createApi({
   reducerPath: COMPANIES_API_REDUCER_KEY,
+  tagTypes: ['Company'],
   baseQuery: fetchBaseQuery(baseQueryConfig),
   endpoints: (builder) => ({
     getCompany: builder.query<CompanyType, string>({
       query: (id: string) => `/companies/${id}`,
+      providesTags: (result, error, id) =>
+        result ? [{ type: 'Company', id }] : [],
     }),
 
     getCompanies: builder.query<CompanyType[], void>({
       query: () => '/companies',
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: 'Company', id }) as const),
+              { type: 'Company', id: 'LIST' },
+            ]
+          : [{ type: 'Company', id: 'LIST' }],
     }),
   }),
 });

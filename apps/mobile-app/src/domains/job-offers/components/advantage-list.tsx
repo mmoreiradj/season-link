@@ -3,32 +3,43 @@ import { Avatar, Text } from 'react-native-paper';
 import Advantage from '../types/advantage.type';
 import { useTranslation } from 'react-i18next';
 import AdvantageType from '../types/avantage-type.enum';
+import { Icon } from 'react-native-paper/lib/typescript/components/Avatar/Avatar';
 
-type Props = {
+type AdvantageListProps = {
   advantages: Advantage[];
 };
 
-export default function AdvantageList({ advantages }: Props) {
+function toIconName(advantageType: string) {
+  switch (advantageType) {
+    case AdvantageType.HEALTH:
+      return 'home';
+    case AdvantageType.FOOD:
+      return 'food';
+    case AdvantageType.HOUSING:
+      return 'home';
+    case AdvantageType.TRANSPORT:
+      return 'bus';
+    default:
+      return '';
+  }
+}
+
+export default function AdvantageList({ advantages }: AdvantageListProps) {
   const { t } = useTranslation();
 
   return (
     <View style={style.advantagesContainer}>
-      <Text>{t('jobOffers:detail:advantages')}:&nbsp;</Text>
+      <Text variant='bodyMedium'>
+        {t('jobOffers:detail:advantages')}:&nbsp;
+      </Text>
       <View style={style.iconsContainer}>
-        {advantages.map((advantage, index) => {
-          switch (advantage.type) {
-            case AdvantageType.HEALTH:
-              return <Avatar.Icon key={index} size={32} icon='home' />;
-            case AdvantageType.FOOD:
-              return <Avatar.Icon key={index} size={32} icon='food' />;
-            case AdvantageType.HOUSING:
-              return <Avatar.Icon key={index} size={32} icon='home' />;
-            case AdvantageType.TRANSPORT:
-              return <Avatar.Icon key={index} size={32} icon='bus' />;
-            default:
-              return null;
-          }
-        })}
+        {advantages.map((advantage, index) => (
+          <Avatar.Icon
+            size={32}
+            key={index}
+            icon={toIconName(advantage.type)}
+          />
+        ))}
       </View>
     </View>
   );
@@ -37,16 +48,15 @@ export default function AdvantageList({ advantages }: Props) {
 const style = StyleSheet.create({
   advantagesContainer: {
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     flexDirection: 'row',
-  },
-  additionalInfoContainer: {
-    flexDirection: 'column',
-    width: '60%',
   },
   iconsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    backgroundColor: '#6750a4',
+    borderRadius: 9999,
+    paddingHorizontal: 2,
   },
 });
