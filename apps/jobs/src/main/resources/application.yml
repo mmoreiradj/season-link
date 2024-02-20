@@ -1,0 +1,24 @@
+quarkus:
+  devservices:
+    enabled: false
+
+  datasource:
+    db-kind: postgresql
+    jdbc: false
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    reactive:
+      url: ${DATABASE_URL}
+
+  hibernate-orm:
+    database:
+      generation: none
+    physical-naming-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+
+  flyway:
+    migrate-at-start: false
+
+
+  http:
+    port: 8080
+    host: 0.0.0.0

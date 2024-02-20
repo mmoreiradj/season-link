@@ -199,24 +199,17 @@ services:
           path: apps/companies/prisma/schema.prisma
           target: /app
 
-  mock:
+  jobs:
     build:
-      context: apps/mock
-    volumes:
-      - ./apps/mock/data:/app/data
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--quiet",
-          "--tries=1",
-          "--spider",
-          "http://localhost:3000/jobs",
-        ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      context: apps/jobs
+      dockerfile: dev.Dockerfile
+    env_file:
+      - ./apps/jobs/.env
+    develop:
+      watch:
+        - action: sync
+          path: apps/jobs
+          target: /app
 
   profile-backend:
     image: season-link-profiles

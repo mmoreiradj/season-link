@@ -26,7 +26,7 @@ model Company {
   country       String
   website       String
   createdAt     DateTime        @default(now()) @map("created_at")
-  updatedAt     DateTime        @updatedAt @map("updated_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at") @default(now())
   Recruiter     Recruiter[]
   CompanyRating CompanyRating[]
 
@@ -39,7 +39,7 @@ model Recruiter {
   company   Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
   oidcId    String   @map("oidc_id")
   createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  updatedAt DateTime @updatedAt @map("updated_at") @default(now())
 
   @@map("recruiters")
 }
@@ -52,7 +52,7 @@ model CompanyRating {
   rating      Int
   comment     String?
   createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  updatedAt   DateTime @updatedAt @map("updated_at") @default(now())
 
   // only allow one rating per candidate per company
   @@unique([companyId, candidateId])
