@@ -23,6 +23,8 @@ import ChatDetailPage from 'domains/chat/pages/chat-detail';
 import ChatPage from 'domains/chat/pages/chat';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SettingsPage from 'domains/profile/pages/profile-settings';
+import 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function App() {
   const auth = useSelector((state: RootState) => state.auth);
@@ -73,30 +75,32 @@ export default function App() {
 
   return (
     <>
-      <SafeAreaView style={styles.container}>
-        <StatusBar style='auto' />
-        {isLoading && <Text>Loading...</Text>}
-        {!isLoading && (
-          <Routes>
-            <Route path='/' Component={Home} />
-            <Route
-              path='/login'
-              element={<LoginPage promptAsync={promptAsync} />}
-            />
-            <Route path='/sign-up' Component={SignUpPage} />
-            <Route path='/email-sent' Component={EmailSentPage} />
-            <Route path='/email-validated' Component={EmailValidatedPage} />
-            <Route path='/delete-account' Component={ProfileDeletePage} />
-            <Route path='/onboarding' Component={OnboardingPage} />
-            <Route path='/settings' Component={SettingsPage} />
-            <Route path='/score' Component={ScorePage} />
-            <Route path='/history' Component={HistoryPage} />
-            <Route path='/jobs' Component={JobPage} />
-            <Route path='/chat/:applicationId' Component={ChatDetailPage} />
-            <Route path='/chat' Component={ChatPage} />
-          </Routes>
-        )}
-      </SafeAreaView>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <SafeAreaView style={styles.container}>
+          <StatusBar style='auto' />
+          {isLoading && <Text>Loading...</Text>}
+          {!isLoading && (
+            <Routes>
+              <Route path='/' Component={Home} />
+              <Route
+                path='/login'
+                element={<LoginPage promptAsync={promptAsync} />}
+              />
+              <Route path='/sign-up' Component={SignUpPage} />
+              <Route path='/email-sent' Component={EmailSentPage} />
+              <Route path='/email-validated' Component={EmailValidatedPage} />
+              <Route path='/delete-account' Component={ProfileDeletePage} />
+              <Route path='/onboarding' Component={OnboardingPage} />
+              <Route path='/settings' Component={SettingsPage} />
+              <Route path='/score' Component={ScorePage} />
+              <Route path='/history' Component={HistoryPage} />
+              <Route path='/jobs' Component={JobPage} />
+              <Route path='/chat/:applicationId' Component={ChatDetailPage} />
+              <Route path='/chat' Component={ChatPage} />
+            </Routes>
+          )}
+        </SafeAreaView>
+      </GestureHandlerRootView>
     </>
   );
 }

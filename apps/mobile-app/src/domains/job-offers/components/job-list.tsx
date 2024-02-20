@@ -1,20 +1,23 @@
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, View } from 'react-native';
-import { Text } from 'react-native-paper';
+import { ActivityIndicator, FlatList, View } from 'react-native';
+import { Appbar, Divider, Text } from 'react-native-paper';
 import { StyleSheet } from 'react-native';
 import { useGetJobOffersQuery } from '../store/job-offers.api';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'common/store/store';
 import { setJobOffers } from '../store/job-offers.slice';
 import JobListItem from './job-list-item';
-import SelectedJobModal from './selected-job-modal';
+import App from 'src/App';
+import JobOfferType from '../types/job-offer.type';
+import BottomSheet from '@gorhom/bottom-sheet';
+import { JobDetails } from './job-details';
 
 export default function JobList() {
   const { t } = useTranslation();
   const { data, error, isLoading } = useGetJobOffersQuery();
-  const jobOffers = useSelector((state: RootState) => state.jobOffers);
   const dispatch = useDispatch();
+  const [selectedJobOffer, setSelectedJobOffer] = useState<JobOfferType>();
 
   useEffect(() => {
     if (data) {
@@ -22,56 +25,43 @@ export default function JobList() {
     }
   }, [data]);
 
-  if (isLoading) {
-    return (
-      <View style={style.loadingContainer}>
-        <ActivityIndicator size='large' color='white' />
-        <Text style={style.loadingMessageContainer}>
-          {t('jobOffers:list:loadingMessage')}
-        </Text>
-      </View>
-    );
-  } else if (error) {
-    return (
-      <View style={style.loadingContainer}>
-        <Text style={style.loadingMessageContainer}>
-          {t('common:errorMessage')}
-        </Text>
-      </View>
-    );
-  } else if (jobOffers.list.length === 0) {
-    return (
-      <View style={style.loadingContainer}>
-        <Text style={style.loadingMessageContainer}>
-          {t('jobOffers:list:empty')}
-        </Text>
-      </View>
-    );
-  } else {
-    return (
-      <View style={style.container}>
-        {jobOffers.list.map((jobOffer) => (
-          <JobListItem key={jobOffer.id} jobOffer={jobOffer} />
-        ))}
-        {jobOffers.selectedJobOffer && (
-          <SelectedJobModal jobOffer={jobOffers.selectedJobOffer} />
-        )}
-      </View>
-    );
-  }
-}
+  // Data for the bottom sheet
+  const snapPoints = useMemo(() => ['85%'], []);
+  const sheetRef = useRef<BottomSheet>(null);
 
-const style = StyleSheet.create({
-  container: {
-    width: '80%',
-    alignItems: 'stretch',
-    flexDirection: 'column',
-  },
-  loadingContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  loadingMessageContainer: {
-    alignItems: 'center',
-  },
-});
+  // Cached rendering function to limit memory trashing
+  const renderItem = useCallback(
+    ({ item }: { item: JobOfferType }) => (
+      <JobListItem
+        jobOffer={item}
+        onSelected={(jobOffer) => {
+          setSelectedJobOffer(jobOffer);
+        }}
+      />
+    ),
+    []
+  );
+
+  return (
+    <>
+      <FlatList
+        data={data}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+      />
+      {selectedJobOffer && (
+        <BottomSheet
+          style={{ elevation: 10 }}
+          ref={sheetRef}
+          backgroundStyle={{ elevation: 10 }}
+          snapPoints={snapPoints}
+          enablePanDownToClose={true}
+          onClose={() => setSelectedJobOffer(undefined)}
+        >
+          <Divider style={{ height: 1.5, marginHorizontal: 15 }} />
+          <JobDetails jobOffer={selectedJobOffer} />
+        </BottomSheet>
+      )}
+    </>
+  );
+}
