@@ -16,8 +16,7 @@ WORKDIR /app
 
 COPY package.json pnpm-lock.yaml ./
 
-RUN --mount=type=cache,target=/pnpm/store \
-    pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 
 COPY tsconfig.json tsconfig.build.json ./
 COPY src src
@@ -43,8 +42,7 @@ WORKDIR /app
 
 COPY package.json pnpm-lock.yaml ./
 
-RUN --mount=type=cache,target=/pnpm/store \
-    pnpm install --frozen-lockfile --ignore-scripts
+RUN pnpm install --frozen-lockfile --ignore-scripts
 
 WORKDIR /app
 
@@ -57,8 +55,7 @@ RUN pnpm run generate:prisma
 
 RUN pnpm run build
 
-RUN --mount=type=cache,target=/pnpm/store \
-    pnpm prune --prod --config.ignore-scripts=true
+RUN pnpm prune --prod --config.ignore-scripts=true
 
 ###################
 # Release stage
