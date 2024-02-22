@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ConfigEnum } from 'shared/config/app.config';
 import CustomHeaders from 'shared/interfaces/custom-headers.iface';
 import Application from './interfaces/application.iface';
 import { PinoLogger } from 'nestjs-pino';
 import ApplicationState from './interfaces/application-state.enum';
+import { Config } from 'shared/config/app.config';
 
 @Injectable()
 export class ApplicationsService {
@@ -12,10 +12,10 @@ export class ApplicationsService {
 
   constructor(
     private readonly logger: PinoLogger,
-    readonly config: ConfigService,
+    readonly config: ConfigService<Config>,
   ) {
     this.applicationServiceUrl = config.getOrThrow<string>(
-      ConfigEnum.APPLICATION_SERVICE_URL,
+      'APPLICATION_SERVICE_URL',
     );
   }
 
