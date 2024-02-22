@@ -54,8 +54,16 @@ async fn main() -> anyhow::Result<()> {
     }
 
     // Check env vars
-    let postgres_url = env::var("db_url").expect("No database url !");
-    let server_port = env::var("server_port").unwrap_or(String::from("3000"));
+    let db_host = env::var("DB_HOST").expect("No database host !");
+    let db_port = env::var("DB_PORT").expect("No database port !");
+    let db_user = env::var("DB_USER").expect("No database user !");
+    let db_password = env::var("DB_PASSWORD").expect("No database password !");
+    let db_name = env::var("DB_NAME").expect("No database name !");
+    let postgres_url = format!(
+        "postgres://{}:{}@{}:{}/{}",
+        db_user, db_password, db_host, db_port, db_name
+    );
+    let server_port = env::var("SERVER_PORT").unwrap_or(String::from("3000"));
 
     //Access the DB
     let pool = PgPoolOptions::new()
