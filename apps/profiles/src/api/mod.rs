@@ -6,3 +6,4 @@ pub mod middlewares;
 pub mod picture;
 pub mod reference;
 pub mod utils;
+pub mod health;
