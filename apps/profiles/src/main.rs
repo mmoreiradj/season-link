@@ -59,7 +59,7 @@ async fn main() -> anyhow::Result<()> {
         "postgres://{}:{}@{}:{}/{}",
         db_user, db_password, db_host, db_port, db_name
     );
-    let server_port = env::var("SERVER_PORT").unwrap_or(String::from("3000"));
+    let server_port = env::var("SERVER_PORT").unwrap_or(String::from("4000"));
 
     //Access the DB
     let pool = PgPoolOptions::new()
