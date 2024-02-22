@@ -75,7 +75,7 @@ pub async fn check_job_valid(job_id: &Uuid) -> Result<(), AppError> {
 
 /// Check whether the job uuid is a valid one
 pub async fn is_job_uuid_valid(job_id: &Uuid) -> Result<bool, AppError> {
-    let root_url = env::var("job_service_url").expect("No job service URL !");
+    let root_url = env::var("JOB_SERVICE_URL").expect("No job service URL !");
     let response = reqwest::get(root_url + "/jobs/" + &job_id.to_string()).await?;
     println!("Job check: {}", &response.status());
     Ok(StatusCode::is_success(&response.status()))
@@ -83,12 +83,12 @@ pub async fn is_job_uuid_valid(job_id: &Uuid) -> Result<bool, AppError> {
 
 /// Get the token to execute operations on the IDP
 pub async fn refresh_token() -> Result<String, AppError> {
-    let root_url = env::var("keycloak_url").expect("No keycloak URL !");
+    let root_url = env::var("KEYCLOAK_URL").expect("No keycloak URL !");
     let acount_username =
-        env::var("keycloak_service_account_username").expect("No keycloak username !");
+        env::var("KEYCLOAK_SERVICE_ACCOUNT_USERNAME").expect("No keycloak username !");
     let account_password =
-        env::var("keycloak_service_account_password").expect("No keycloak password !");
-    let client_id = env::var("keycloak_client_id").expect("No keycloak client id !");
+        env::var("KEYCLOAK_SERVICE_ACCOUNT_PASSWORD").expect("No keycloak password !");
+    let client_id = env::var("KEYCLOAK_CLIENT_ID").expect("No keycloak client id !");
     //TODO let' s not do a connection each time, transfer the token to the shared state
     let params = [
         ("grant_type", "password"),

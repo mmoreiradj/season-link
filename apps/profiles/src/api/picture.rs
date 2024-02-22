@@ -16,7 +16,7 @@ use super::utils::AppError;
 pub async fn get_candidate_picture(
     Path(user_id): Path<Uuid>,
 ) -> axum::response::Result<impl IntoResponse, AppError> {
-    let url = env::var("image_generator_service_url").expect("No image generation !");
+    let url = env::var("IMAGE_GENERATOR_SERVICE_URL").expect("No image generation !");
 
     let split_uuid = user_id.as_bytes();
 
