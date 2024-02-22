@@ -8,7 +8,7 @@ quarkus:
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
     reactive:
-      url: ${DATABASE_URL}
+      url: vertx-reactive:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
 
   hibernate-orm:
     database:
@@ -17,7 +17,6 @@ quarkus:
 
   flyway:
     migrate-at-start: false
-
 
   http:
     port: 8080
