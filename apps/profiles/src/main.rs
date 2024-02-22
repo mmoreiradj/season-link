@@ -79,6 +79,10 @@ async fn main() -> anyhow::Result<()> {
     // build our applications
     let mut router = Router::new();
 
+    router = router
+        .route("/health/live", get(api::health::health))
+        .route("/health/ready", get(api::health::health));
+
     // Register the users
     router = router
         .route("/profiles/user", post(create_candidate))
