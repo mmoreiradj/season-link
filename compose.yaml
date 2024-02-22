@@ -3,6 +3,7 @@
 
 services:
   postgresql:
+    container_name: postgresql
     image: bitnami/postgresql:14-debian-11
     restart: unless-stopped
     environment:
@@ -76,8 +77,15 @@ services:
     entrypoint: ["/bin/sh", "-c", "/tmp/init-script.sh"]
 
   mailhog:
+    container_name: mailhog
     image: mailhog/mailhog:v1.0.1
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 5s bash -c ':> /dev/tcp/127.0.0.1/1025' || exit 1"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
     ports:
       - 1025:1025
       - 8025:8025
@@ -92,7 +100,7 @@ services:
     ports:
       - 8081:8080
     env_file:
-      - ./apps/gateway/.env
+      - ./apps/gateway/.env.example
     build:
       context: apps/gateway
       dockerfile: dev.Dockerfile
@@ -120,7 +128,7 @@ services:
     container_name: job-offers
     command: ["./mvnw", "spring-boot:run", "-DskipTests=true"]
     env_file:
-      - ./apps/job-offers/.env
+      - ./apps/job-offers/.env.compose
     build:
       context: apps/job-offers
       dockerfile: dev.Dockerfile
@@ -152,12 +160,18 @@ services:
   chat:
     container_name: chat
     env_file:
-      - ./apps/chat/.env
+      - ./apps/chat/.env.compose
     build:
       context: apps/chat
       dockerfile: Dockerfile
       target: dev
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/health/live"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
     develop:
       watch:
         - action: sync
@@ -177,12 +191,18 @@ services:
   companies:
     container_name: companies
     env_file:
-      - ./apps/companies/.env
+      - ./apps/companies/.env.compose
     build:
       context: apps/companies
       dockerfile: Dockerfile
       target: dev
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/health/live"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
     develop:
       watch:
         - action: sync
@@ -204,7 +224,13 @@ services:
       context: apps/jobs
       dockerfile: dev.Dockerfile
     env_file:
-      - ./apps/jobs/.env
+      - ./apps/jobs/.env.compose
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/q/health/live"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
     develop:
       watch:
         - action: sync
@@ -212,12 +238,11 @@ services:
           target: /app
 
   profile-backend:
+    container_name: profile-backend
     image: season-link-profiles
     build: ./apps/profiles/
     env_file:
-      - ./apps/profiles/.env.local
-    ports:
-      - "4000:4000"
+      - ./apps/profiles/.env.compose
     depends_on:
       postgresql:
         condition: service_healthy
@@ -226,6 +251,15 @@ services:
 
   profile-minio:
     image: minio/minio
+    container_name: profile-minio
+    ports:
+      - "9000:9000"
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 5s bash -c ':> /dev/tcp/127.0.0.1/9000' || exit 1"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
     volumes:
       - "minio_storage:/data"
     environment:
@@ -236,7 +270,14 @@ services:
 
   # Image generator used for the PFPs
   go-image-generator:
+    container_name: go-image-generator
     image: ghcr.io/mathias-boulay/go-image-generator:latest
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 5s sh -c ':> /dev/tcp/127.0.0.1/5555' || exit 1"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
     environment:
       - SERVER_PORT=5555
       - SERVER_IMAGE_BINARY=true
@@ -248,6 +289,12 @@ services:
       dockerfile: Dockerfile
     env_file:
       - ./apps/recommendations/.env.compose
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5000/health/live"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
     develop:
       watch:
         - action: rebuild
@@ -255,6 +302,7 @@ services:
           target: /app
 
   neo4j:
+    container_name: neo4j
     image: neo4j
     environment:
       - NEO4J_PLUGINS=["apoc", "apoc-extended"]
