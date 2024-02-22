@@ -16,7 +16,7 @@ type RecommendationService interface {
 	// Insert advantage into the database
 	InsertAdvantage(advantage Advantage) error
 	// Recommend job offers for a given user
-	RecommenendJobOffers(user UserRecommendationRequest) ([]JobOffer, error)
+	RecommendJobOffers(user UserRecommendationRequest) ([]JobOffer, error)
 }
 
 type RecommendationServiceImpl struct {
@@ -79,7 +79,7 @@ func (r *RecommendationServiceImpl) InsertAdvantage(advantage Advantage) error {
 	return err
 }
 
-func (r *RecommendationServiceImpl) RecommenendJobOffers(user UserRecommendationRequest) ([]JobOffer, error) {
+func (r *RecommendationServiceImpl) RecommendJobOffers(user UserRecommendationRequest) ([]JobOffer, error) {
 	var cypherQuery string
 	var queryParams map[string]interface{}
 
