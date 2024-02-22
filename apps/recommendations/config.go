@@ -38,7 +38,7 @@ func (n *NatsConfig) NewNatsClient() (*nats.Conn, error) {
 }
 
 func ParseNatsConfig() NatsConfig {
-	url := GetEnvOrFail("NATS_URL")
+	url := "nats://" + GetEnvOrFail("NATS_HOST") + ":" + GetEnvOrFail("NATS_PORT")
 
 	return NatsConfig{
 		Url: url,
@@ -61,12 +61,13 @@ func (n *Neo4jConfig) NewDriver() (neo4j.DriverWithContext, error) {
 
 func ParseNeo4JConfig() Neo4jConfig {
 	database := GetEnvOrFail("NEO4J_DATABASE")
-	url := GetEnvOrFail("NEO4J_URL")
+	host := GetEnvOrFail("NEO4J_HOST")
+	port := GetEnvOrFail("NEO4J_PORT")
 	username := GetEnvOrFail("NEO4J_USERNAME")
 	password := GetEnvOrFail("NEO4J_PASSWORD")
 
 	return Neo4jConfig{
-		Url:      url,
+		Url:      "neo4j://" + host + ":" + port,
 		Username: username,
 		Password: password,
 		Database: database,

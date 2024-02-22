@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
-import { ConfigEnum, config } from 'shared/config/app.config';
+import { Config, config } from 'shared/config/app.config';
 import { HealthModule } from './health/health.module';
 import { PrismaModule } from 'shared/prisma/prisma.module';
 import { CompaniesModule } from './companies/companies.module';
@@ -15,18 +15,17 @@ import { RatingsModule } from './ratings/ratings.module';
       validate: config,
     }),
     LoggerModule.forRootAsync({
-      useFactory: (config: ConfigService) => ({
+      useFactory: (config: ConfigService<Config>) => ({
         pinoHttp: {
-          level: config.getOrThrow<string>(ConfigEnum.LOG_LEVEL),
+          level: config.getOrThrow<string>('LOG_LEVEL'),
           transport:
-            config.getOrThrow<string>(ConfigEnum.NODE_ENV) !== 'production'
+            config.getOrThrow<string>('NODE_ENV') !== 'production'
               ? { target: 'pino-pretty' }
               : undefined,
           serializers: {
             req: (req) => ({
               method: req.method,
               url: req.url,
-              // headers: req.headers,
             }),
             res: (res) => ({
               statusCode: res.statusCode,
@@ -48,4 +47,4 @@ import { RatingsModule } from './ratings/ratings.module';
   ],
   controllers: [],
 })
-export class AppModule {}
+export class AppModule { }

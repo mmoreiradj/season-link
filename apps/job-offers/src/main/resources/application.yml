@@ -1,13 +1,13 @@
 spring:
   r2dbc:
-    url: ${R2DBC_URL}
+    url: r2dbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
     name: ${DB_NAME}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
   flyway:
     user: ${DB_USER}
     password: ${DB_PASSWORD}
-    url: ${JDBC_URL}
+    jdbc: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
 
 server:
   port: ${SERVER_PORT}
@@ -19,4 +19,4 @@ seasonlink:
 
 logging:
   level:
-    web: debug
+    web: info
