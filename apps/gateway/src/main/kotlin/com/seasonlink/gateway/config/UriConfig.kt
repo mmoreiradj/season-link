@@ -12,8 +12,6 @@ data class UriConfig(
     val jobOffers: String,
     val companies: String,
     val profiles: String,
-    val ratings: String,
-    val notifications: String,
     val chat: String,
     val recommendations: String
 )

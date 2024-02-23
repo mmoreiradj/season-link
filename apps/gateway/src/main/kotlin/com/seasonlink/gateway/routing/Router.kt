@@ -46,11 +46,6 @@ class Router(private val uriConfig: UriConfig) {
             }
             .route { r ->
                 r
-                    .path("/notifications/**")
-                    .uri(uriConfig.notifications)
-            }
-            .route { r ->
-                r
                     .path("/recommendations/**")
                     .uri(uriConfig.recommendations)
             }
