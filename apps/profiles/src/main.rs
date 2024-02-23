@@ -54,11 +54,11 @@ async fn main() -> anyhow::Result<()> {
     }
 
     // Check env vars
-    let db_host = env::var("DB_HOST").expect("No database host !");
-    let db_port = env::var("DB_PORT").expect("No database port !");
-    let db_user = env::var("DB_USER").expect("No database user !");
-    let db_password = env::var("DB_PASSWORD").expect("No database password !");
-    let db_name = env::var("DB_NAME").expect("No database name !");
+    let db_host = env::var("PG_HOST").expect("No database host !");
+    let db_port = env::var("PG_PORT").expect("No database port !");
+    let db_user = env::var("PG_USER").expect("No database user !");
+    let db_password = env::var("PG_PASSWORD").expect("No database password !");
+    let db_name = env::var("PG_DATABASE").expect("No database name !");
     let postgres_url = format!(
         "postgres://{}:{}@{}:{}/{}",
         db_user, db_password, db_host, db_port, db_name

@@ -1,13 +1,13 @@
 spring:
   r2dbc:
-    url: r2dbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
-    name: ${DB_NAME}
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
+    url: r2dbc:postgresql://${PG_HOST}:${PG_PORT}/${PG_DATABASE}
+    name: ${PG_DATABASE}
+    username: ${PG_USER}
+    password: ${PG_PASSWORD}
   flyway:
-    user: ${DB_USER}
-    password: ${DB_PASSWORD}
-    jdbc: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    user: ${PG_USER}
+    password: ${PG_PASSWORD}
+    jdbc: jdbc:postgresql://${PG_HOST}:${PG_PORT}/${PG_DATABASE}
 
 server:
   port: ${SERVER_PORT}
