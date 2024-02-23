@@ -5,10 +5,10 @@ quarkus:
   datasource:
     db-kind: postgresql
     jdbc: false
-    username: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
+    username: ${PG_USER}
+    password: ${PG_PASSWORD}
     reactive:
-      url: vertx-reactive:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
+      url: vertx-reactive:postgresql://${PG_HOST}:${PG_PORT}/${PG_DATABASE}
 
   hibernate-orm:
     database:
