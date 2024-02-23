@@ -47,6 +47,9 @@ dependencies:
   prettier:
     specifier: ^3.0.0
     version: 3.1.0
+  prisma:
+    specifier: ^5.6.0
+    version: 5.6.0
   prisma-error-enum:
     specifier: ^0.1.3
     version: 0.1.3
@@ -100,9 +103,6 @@ devDependencies:
   jest:
     specifier: ^29.5.0
     version: 29.7.0(@types/node@20.10.2)(ts-node@10.9.1)
-  prisma:
-    specifier: ^5.6.0
-    version: 5.6.0
   source-map-support:
     specifier: ^0.5.21
     version: 0.5.21
@@ -1197,6 +1197,7 @@ packages:
   /@prisma/engines@5.6.0:
     resolution: {integrity: sha512-Mt2q+GNJpU2vFn6kif24oRSBQv1KOkYaterQsi0k2/lA+dLvhRX6Lm26gon6PYHwUM8/h8KRgXIUMU0PCLB6bw==}
     requiresBuild: true
+    dev: false
 
   /@sinclair/typebox@0.27.8:
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
@@ -4653,6 +4654,7 @@ packages:
     requiresBuild: true
     dependencies:
       '@prisma/engines': 5.6.0
+    dev: false
 
   /process-nextick-args@2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
