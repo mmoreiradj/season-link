@@ -5,7 +5,7 @@ WORKDIR /app
 COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
 
-RUN ./mvnw dependency:go-offline
+RUN ./mvnw clean install -DskipTests
 
 COPY src ./src
 
@@ -17,8 +17,8 @@ FROM eclipse-temurin:17-jre-alpine AS prod
 
 WORKDIR /app
 
-COPY --from=build /app/target/*.jar ./app.jar
+COPY --from=build /app/target/quarkus-app ./
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+CMD ["java", "-jar", "quarkus-run.jar", "-Dquarkus.http.host=0.0.0.0"]
