@@ -62,19 +62,19 @@ class ApplicationController(
             }
         }
 
-    @PostMapping("/applications")
+    @GetMapping("/applications")
     fun findByCandidateIdOrCompanyId(
         @RequestHeader("X-User-Id") candidateId: UUID,
-        @RequestHeader("X-User-Role") role: String
+        @RequestHeader("X-User-Roles") role: String
     ): Flux<Application> =
         when (role) {
-            "candidate" -> {
+            "client_candidate" -> {
                 applicationService.findByCandidateId(candidateId)
             }
-            "recruiter" -> {
+            "client_recruiter" -> {
                 TODO()
             }
-            "admin" -> {
+            "client_admin" -> {
                 TODO()
             }
 
