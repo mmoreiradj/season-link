@@ -1,0 +1,21 @@
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  hosts:
+    - host: api-season-link.ve.moreiradj.net
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls:
+    - secretName: api-season-link-tls
+      hosts:
+        - api-season-link.ve.moreiradj.net
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+    traefik.ingress.kubernetes.io/redirect-permanent: "true"
+    traefik.ingress.kubernetes.io/ssl-redirect: "true"
+
+keycloak:
+  issuerUri: "https://auth-season-link.ve.moreiradj.net"
+  jwksUri: "https://auth-season-link.ve.moreiradj.net/auth/realms/season-link/protocol/openid-connect/certs"
