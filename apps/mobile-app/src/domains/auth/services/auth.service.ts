@@ -58,6 +58,7 @@ const AuthService = {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace('-', '+').replace('_', '/');
     const decodedToken = JSON.parse(window.atob(base64));
+    console.log(decodedToken);
 
     return decodedToken;
   },
@@ -92,6 +93,13 @@ const AuthService = {
         refreshToken: data.refreshToken,
       };
     }
+  },
+
+  getDecodedToken: async (): Promise<DecodedToken | null> => {
+    const auth = await AuthService.loadSession();
+    if (!auth || !auth.accessToken) return null;
+
+    return AuthService.decodeToken(auth.accessToken);
   },
 };
 

@@ -8,6 +8,7 @@ import { companiesApi } from 'domains/job-offers/store/companies.api';
 import { applicationsApi } from 'domains/job-offers/store/applications.api';
 import { jobCategoriesApi } from 'domains/job-categories/store/job-category.api';
 import { profilesApi } from 'domains/profile/store/profile.api';
+import { chatApi } from 'domains/chat/store/chat.api';
 
 export const store = configureStore({
   reducer: {
@@ -20,6 +21,7 @@ export const store = configureStore({
     [applicationsApi.reducerPath]: applicationsApi.reducer,
     [jobCategoriesApi.reducerPath]: jobCategoriesApi.reducer,
     [profilesApi.reducerPath]: profilesApi.reducer,
+    [chatApi.reducerPath]: chatApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -28,7 +30,8 @@ export const store = configureStore({
       .concat(companiesApi.middleware)
       .concat(applicationsApi.middleware)
       .concat(jobCategoriesApi.middleware)
-      .concat(profilesApi.middleware),
+      .concat(profilesApi.middleware)
+      .concat(chatApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

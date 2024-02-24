@@ -24,11 +24,7 @@ export default function ChatHeader({ application }: Props) {
 
   return (
     <View style={style.container}>
-      {!isJobOfferLoading && jobOffer ? (
-        <JobListItem jobOffer={jobOffer!} />
-      ) : (
-        <Text>{t('common:loading')}</Text>
-      )}
+      {jobOffer && <JobListItem jobOffer={jobOffer!} onSelected={() => {}} />}
     </View>
   );
 }
