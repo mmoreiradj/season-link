@@ -22,7 +22,22 @@ export const applicationsApi = createApi({
       providesTags: (result) =>
         result ? [{ type: 'Application', id: result.id }] : [],
     }),
+
+    getApplications: builder.query<Application[], void>({
+      query: () => 'applications',
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: 'Application', id }) as const),
+              { type: 'Application', id: 'LIST' },
+            ]
+          : [{ type: 'Application', id: 'LIST' }],
+    }),
   }),
 });
 
-export const { useApplyMutation, useGetApplicationQuery } = applicationsApi;
+export const {
+  useApplyMutation,
+  useGetApplicationQuery,
+  useGetApplicationsQuery,
+} = applicationsApi;

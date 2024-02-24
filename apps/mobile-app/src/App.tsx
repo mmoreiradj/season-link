@@ -20,11 +20,11 @@ import useAuthorizationWorkflow from 'domains/auth/hooks/useAthorizationWorkflow
 import useTokenRefresher from 'domains/auth/hooks/useTokenRefresher';
 import AuthService from 'domains/auth/services/auth.service';
 import ChatDetailPage from 'domains/chat/pages/chat-detail';
-import ChatPage from 'domains/chat/pages/chat';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SettingsPage from 'domains/profile/pages/profile-settings';
 import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import ChatPage from 'domains/chat/pages/chats';
 
 export default function App() {
   const auth = useSelector((state: RootState) => state.auth);

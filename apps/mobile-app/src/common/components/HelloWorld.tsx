@@ -10,8 +10,8 @@ import HistoryPage from 'src/pages/history';
 
 import ScorePage from 'domains/profile/pages/profile-score';
 import JobPage from 'domains/job-offers/pages/job';
-import ChatPage from 'domains/chat/pages/chat';
 import SettingsPage from 'domains/profile/pages/profile-settings';
+import ChatPage from 'domains/chat/pages/chats';
 
 export function Home() {
   const [index, setIndex] = React.useState(0);

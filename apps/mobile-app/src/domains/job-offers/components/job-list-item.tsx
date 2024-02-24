@@ -7,16 +7,55 @@ import { useGetCompanyQuery } from '../store/companies.api';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { setSelectedJobOffer } from '../store/job-offers.slice';
+import JobCategoryType from 'domains/job-categories/types/job-category.type';
+import {
+  useGetJobCategoriesQuery,
+  useGetJobCategoryQuery,
+} from 'domains/job-categories/store/job-category.api';
 
 type JobListItemProps = {
   jobOffer: JobOfferType;
   onSelected: (jobOffer: JobOfferType) => void;
+  height?: number;
 };
+
+function jobCategoryToIcon(jobCategory?: JobCategoryType) {
+  for (const category of [
+    ['Agriculture', 'leaf'],
+    ['Hotel', 'bed'],
+    ['Evenementiel', 'party-popper'],
+    ['Casino', 'ticket'],
+    ['Administration', 'briefcase'],
+    ['Loisir', 'tree'],
+    ['Montagne', 'image-filter-hdr'],
+    ['Mer', 'waves'],
+    ['Jardinerie', 'shovel'],
+    ['Sécurité', 'security'],
+    ['Logisitique', 'truck'],
+    ['Baby', 'baby-face'],
+    ['Commerce', 'store'],
+    ['SPA', 'spa'],
+    ['Arts', 'palette'],
+    ['', 'domain'],
+  ]) {
+    if (jobCategory?.title.includes(category[0])) {
+      return category[1];
+    }
+  }
+
+  return 'domain';
+}
 
 export default function JobListItem(props: JobListItemProps) {
   const { data: job, error: jobError } = useGetJobQuery(props.jobOffer.jobId);
   const { data: company, error: companyError } = useGetCompanyQuery(
     props.jobOffer.companyId
+  );
+  const { data: jobCategory, error: jobCategoryError } = useGetJobCategoryQuery(
+    job?.categoryId ?? '',
+    {
+      skip: !job,
+    }
   );
 
   useEffect(() => {
@@ -32,33 +71,18 @@ export default function JobListItem(props: JobListItemProps) {
   if (job && company) {
     return (
       <TouchableRipple
+        style={{ height: props.height }}
         onPress={() => props.onSelected(props.jobOffer)}
         rippleColor='rgba(0, 0, 0, .1)'
       >
         <Card.Title
           title={`${job.title} ${t('jobOffers:list:cardSeparator')}`}
           subtitle={company.name}
-          left={(props) => <Avatar.Icon {...props} icon='domain' />}
+          left={(props) => (
+            <Avatar.Icon {...props} icon={jobCategoryToIcon(jobCategory)} />
+          )}
         />
       </TouchableRipple>
-    );
-  } else if (jobError || companyError) {
-    return (
-      <Card.Title
-        title={t('jobOffers:detail:jobError')}
-        subtitle={t('jobOffers:detail:jobErrorMessage')}
-        left={(props) => <Avatar.Icon {...props} icon='domain' />}
-      />
-    );
-  } else {
-    return (
-      <View>
-        <Card.Title
-          title={t('jobOffers:detail:jobLoading')}
-          subtitle={t('jobOffers:detail:jobLoading')}
-          left={(props) => <Avatar.Icon {...props} icon='domain' />}
-        />
-      </View>
     );
   }
 }

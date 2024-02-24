@@ -13,6 +13,8 @@ import JobOfferType from '../types/job-offer.type';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { JobDetails } from './job-details';
 
+const ITEM_HEIGHT = 70;
+
 export default function JobList() {
   const { t } = useTranslation();
   const { data, error, isLoading } = useGetJobOffersQuery();
@@ -33,6 +35,7 @@ export default function JobList() {
   const renderItem = useCallback(
     ({ item }: { item: JobOfferType }) => (
       <JobListItem
+        height={ITEM_HEIGHT}
         jobOffer={item}
         onSelected={(jobOffer) => {
           setSelectedJobOffer(jobOffer);
@@ -42,12 +45,26 @@ export default function JobList() {
     []
   );
 
+  // Cached layout function to limit memory trashing
+  const getItemLayout = useCallback(
+    (data: ArrayLike<JobOfferType> | null | undefined, index: number) => {
+      return {
+        length: ITEM_HEIGHT,
+        offset: ITEM_HEIGHT * index,
+        index,
+      };
+    },
+    []
+  );
+
   return (
     <>
       <FlatList
         data={data}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
+        windowSize={5}
+        getItemLayout={getItemLayout}
       />
       {selectedJobOffer && (
         <BottomSheet

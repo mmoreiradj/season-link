@@ -14,7 +14,7 @@ export default {
       advantages: 'Avantages',
       salary: 'Salaire',
       hour: 'Heure',
-      hoursPerWeek: 'Heures par semaine',
+      hoursPerWeek: 'Avec une charge de travail hebdomadaire de',
       description: 'Description',
       rating: 'Note',
       apply: 'Postuler',
