@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "chat.fullname" . }}
+  name: {{ include "minio.fullname" . }}
   labels:
-    {{- include "chat.labels" . | nindent 4 }}
+    {{- include "minio.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "chat.selectorLabels" . | nindent 6 }}
+      {{- include "minio.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,7 +18,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "chat.labels" . | nindent 8 }}
+        {{- include "minio.labels" . | nindent 8 }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -27,7 +27,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "chat.serviceAccountName" . }}
+      serviceAccountName: {{ include "minio.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -36,38 +36,26 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - /bin/bash
+            - -c
+          args:
+            - minio server /data
+          env:
+            - name: MINIO_ROOT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.auth.secretName }}
+                  key: {{ .Values.auth.accessKeyKey }}
+            - name: MINIO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.auth.secretName }}
+                  key: {{ .Values.auth.secretKeyKey }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
-          env:
-            - name: NODE_ENV
-              value: {{ .Values.nodeEnv }}
-            - name: LOG_LEVEL
-              value: {{ .Values.logLevel }}
-            - name: SERVER_PORT
-              value: {{ .Values.service.port | quote }}
-            - name: SERVER_HOST
-              value: "0.0.0.0"
-            - name: APPLICATION_SERVICE_URL
-              value: "{{ .Values.aplicationServiceUrl }}"
-            - name: PG_USER
-              value: {{ .Values.postgresql.username }}
-            - name: PG_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.postgresql.credentialsSecretName }}
-                  key: {{ .Values.postgresql.credentialsSecretPasswordKey }}
-            - name: PG_HOST
-              value: {{ .Values.postgresql.host }}
-            - name: PG_PORT
-              value: {{ .Values.postgresql.port | quote }}
-            - name: PG_DATABASE
-              value: {{ .Values.postgresql.database }}
-          livenessProbe:
-            {{- toYaml .Values.livenessProbe | nindent 12 }}
-          readinessProbe:
-            {{- toYaml .Values.readinessProbe | nindent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- with .Values.volumeMounts }}

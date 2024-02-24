@@ -1,30 +1,23 @@
-# Default values for chat.
+# Default values for minio.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
 
 image:
-  repository: ghcr.io/mmoreiradj/season-link/chat
+  repository: quay.io/minio/minio
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
+auth:
+  secretName: minio-credentials
+  accessKeyKey: minio-access-key
+  secretKeyKey: minio-secret-key
+
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
-
-nodeEnv: "production"
-logLevel: "info"
-aplicationServiceUrl: "http://job-offers:8080"
-
-postgresql:
-  host: "postgresql-chat"
-  port: 5432
-  database: "chat"
-  username: "chat"
-  credentialsSecretName: "postgresql-chat"
-  credentialsSecretPasswordKey: "password"
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -40,12 +33,10 @@ serviceAccount:
 podAnnotations: {}
 podLabels: {}
 
-podSecurityContext:
-  {}
+podSecurityContext: {}
   # fsGroup: 2000
 
-securityContext:
-  {}
+securityContext: {}
   # capabilities:
   #   drop:
   #   - ALL
@@ -55,13 +46,12 @@ securityContext:
 
 service:
   type: ClusterIP
-  port: 3000
+  port: 9000
 
 ingress:
   enabled: false
   className: ""
-  annotations:
-    {}
+  annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
@@ -74,8 +64,7 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-resources:
-  {}
+resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
@@ -87,15 +76,6 @@ resources:
   #   cpu: 100m
   #   memory: 128Mi
 
-livenessProbe:
-  httpGet:
-    path: /health/live
-    port: http
-readinessProbe:
-  httpGet:
-    path: /health/ready
-    port: http
-
 autoscaling:
   enabled: false
   minReplicas: 1
@@ -104,17 +84,16 @@ autoscaling:
   # targetMemoryUtilizationPercentage: 80
 
 # Additional volumes on the output Deployment definition.
-volumes: []
-# - name: foo
-#   secret:
-#     secretName: mysecret
-#     optional: false
+volumes:
+- name: minio-volume
+  persistantVolumeClaim:
+    claimName: minio-pvc
 
 # Additional volumeMounts on the output Deployment definition.
-volumeMounts: []
-# - name: foo
-#   mountPath: "/etc/foo"
-#   readOnly: true
+volumeMounts:
+- name: minio-volume
+  mountPath: "/data"
+  readOnly: false
 
 nodeSelector: {}
 
