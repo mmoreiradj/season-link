@@ -1,0 +1,21 @@
+proxy: edge
+
+production: true
+
+auth:
+  adminUser: super
+
+extraEnvVars:
+  - name: KC_HOSTNAME
+    value: auth-season-link.ve.moreiradj.net
+
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  hostname: auth-season-link.ve.moreiradj.net
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+    traefik.ingress.kubernetes.io/redirect-permanent: "true"
+    traefik.ingress.kubernetes.io/ssl-redirect: "true"
+  tls: true
