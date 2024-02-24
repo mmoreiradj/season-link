@@ -1,11 +1,11 @@
-# Default values for chat.
+# Default values for gateway.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
 
 image:
-  repository: ghcr.io/mmoreiradj/season-link/chat
+  repository: ghcr.io/mmoreiradj/season-link/gateway
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -14,17 +14,17 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-nodeEnv: "production"
-logLevel: "info"
-aplicationServiceUrl: "http://job-offers:8080"
+keycloak:
+  issuerUri: "https://example.com/realms/season-link"
+  jwksUri: "https://example.com/realms/season-link/protocol/openid-connect/certs"
 
-postgresql:
-  host: "postgresql-chat"
-  port: 5432
-  database: "chat"
-  username: "chat"
-  credentialsSecretName: "postgresql-chat"
-  credentialsSecretPasswordKey: "password"
+jobsServiceUrl: "http://jobs:8080"
+jobOffersServiceUrl: "http://job-offers:8080"
+companiesServiceUrl: "http://companies:3000"
+profilesServiceUrl: "http://profiles:4000"
+ratingsServiceUrl: "http://ratings:8080"
+chatServiceUrl: "http://chat:3000"
+recommendationsServiceUrl: "http://recommendations:5000"
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -55,7 +55,7 @@ securityContext:
 
 service:
   type: ClusterIP
-  port: 3000
+  port: 8080
 
 ingress:
   enabled: false
@@ -89,11 +89,11 @@ resources:
 
 livenessProbe:
   httpGet:
-    path: /health/live
+    path: /actuator/health
     port: http
 readinessProbe:
   httpGet:
-    path: /health/ready
+    path: /actuator/health
     port: http
 
 autoscaling:

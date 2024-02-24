@@ -1,11 +1,11 @@
-# Default values for chat.
+# Default values for companies.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
 
 image:
-  repository: ghcr.io/mmoreiradj/season-link/chat
+  repository: ghcr.io/mmoreiradj/season-link/companies
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -19,11 +19,11 @@ logLevel: "info"
 aplicationServiceUrl: "http://job-offers:8080"
 
 postgresql:
-  host: "postgresql-chat"
+  host: "postgresql-companies"
   port: 5432
-  database: "chat"
-  username: "chat"
-  credentialsSecretName: "postgresql-chat"
+  database: "companies"
+  username: "companies"
+  credentialsSecretName: "postgresql-companies"
   credentialsSecretPasswordKey: "password"
 
 serviceAccount:

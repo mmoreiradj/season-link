@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "chat.fullname" . }}
+  name: {{ include "gateway.fullname" . }}
   labels:
-    {{- include "chat.labels" . | nindent 4 }}
+    {{- include "gateway.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "chat.selectorLabels" . | nindent 6 }}
+      {{- include "gateway.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,7 +18,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "chat.labels" . | nindent 8 }}
+        {{- include "gateway.labels" . | nindent 8 }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -27,7 +27,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "chat.serviceAccountName" . }}
+      serviceAccountName: {{ include "gateway.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -41,29 +41,26 @@ spec:
               containerPort: {{ .Values.service.port }}
               protocol: TCP
           env:
-            - name: NODE_ENV
-              value: {{ .Values.nodeEnv }}
-            - name: LOG_LEVEL
-              value: {{ .Values.logLevel }}
+            - name: KEYCLOAK_ISSUER_URI
+              value: {{ .Values.keycloak.issuerUri }}
+            - name: KEYCLOAK_JWKS_URI
+              value: {{ .Values.keycloak.jwksUri }}
+            - name: JOBS_SERVICE_URL
+              value: {{ .Values.jobsServiceUrl }}
+            - name: JOB_OFFERS_SERVICE_URL
+              value: {{ .Values.jobOffersServiceUrl }}
+            - name: COMPANIES_SERVICE_URL
+              value: {{ .Values.companiesServiceUrl }}
+            - name: PROFILES_SERVICE_URL
+              value: {{ .Values.profilesServiceUrl }}
+            - name: RATINGS_SERVICE_URL
+              value: {{ .Values.ratingsServiceUrl }}
+            - name: CHAT_SERVICE_URL
+              value: {{ .Values.chatServiceUrl }}
+            - name: RECOMMENDATIONS_SERVICE_URL
+              value: {{ .Values.recommendationsServiceUrl }}
             - name: SERVER_PORT
               value: {{ .Values.service.port | quote }}
-            - name: SERVER_HOST
-              value: "0.0.0.0"
-            - name: APPLICATION_SERVICE_URL
-              value: "{{ .Values.aplicationServiceUrl }}"
-            - name: PG_USER
-              value: {{ .Values.postgresql.username }}
-            - name: PG_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.postgresql.credentialsSecretName }}
-                  key: {{ .Values.postgresql.credentialsSecretPasswordKey }}
-            - name: PG_HOST
-              value: {{ .Values.postgresql.host }}
-            - name: PG_PORT
-              value: {{ .Values.postgresql.port | quote }}
-            - name: PG_DATABASE
-              value: {{ .Values.postgresql.database }}
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
