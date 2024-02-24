@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "chat.fullname" . }}
+  name: {{ include "job-offers.fullname" . }}
   labels:
-    {{- include "chat.labels" . | nindent 4 }}
+    {{- include "job-offers.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "chat.selectorLabels" . | nindent 6 }}
+      {{- include "job-offers.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,7 +18,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "chat.labels" . | nindent 8 }}
+        {{- include "job-offers.labels" . | nindent 8 }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -27,7 +27,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "chat.serviceAccountName" . }}
+      serviceAccountName: {{ include "job-offers.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -41,16 +41,12 @@ spec:
               containerPort: {{ .Values.service.port }}
               protocol: TCP
           env:
-            - name: NODE_ENV
-              value: {{ .Values.nodeEnv }}
-            - name: LOG_LEVEL
-              value: {{ .Values.logLevel }}
             - name: SERVER_PORT
               value: {{ .Values.service.port | quote }}
-            - name: SERVER_HOST
-              value: "0.0.0.0"
-            - name: APPLICATION_SERVICE_URL
-              value: "{{ .Values.aplicationServiceUrl }}"
+            - name: COMPANIES_SERVICE_URL
+              value: "{{ .Values.companiesServiceUrl }}"
+            - name: JOBS_SERVICE_URL
+              value: "{{ .Values.jobsServiceUrl }}"
             - name: PG_USER
               value: {{ .Values.postgresql.username }}
             - name: PG_PASSWORD

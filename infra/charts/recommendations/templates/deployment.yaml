@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "chat.fullname" . }}
+  name: {{ include "recommendations.fullname" . }}
   labels:
-    {{- include "chat.labels" . | nindent 4 }}
+    {{- include "recommendations.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "chat.selectorLabels" . | nindent 6 }}
+      {{- include "recommendations.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,7 +18,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "chat.labels" . | nindent 8 }}
+        {{- include "recommendations.labels" . | nindent 8 }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -27,7 +27,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "chat.serviceAccountName" . }}
+      serviceAccountName: {{ include "recommendations.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -41,29 +41,25 @@ spec:
               containerPort: {{ .Values.service.port }}
               protocol: TCP
           env:
-            - name: NODE_ENV
-              value: {{ .Values.nodeEnv }}
-            - name: LOG_LEVEL
-              value: {{ .Values.logLevel }}
-            - name: SERVER_PORT
-              value: {{ .Values.service.port | quote }}
-            - name: SERVER_HOST
-              value: "0.0.0.0"
-            - name: APPLICATION_SERVICE_URL
-              value: "{{ .Values.aplicationServiceUrl }}"
-            - name: PG_USER
-              value: {{ .Values.postgresql.username }}
-            - name: PG_PASSWORD
+            - name: NEO4J_DATABASE
+              value: {{ .Values.neo4j.database }}
+            - name: NEO4J_PORT
+              value: {{ .Values.neo4j.port | quote }}
+            - name: NEO4J_HOST
+              value: {{ .Values.neo4j.host }}
+            - name: NEO4J_USERNAME
+              value: {{ .Values.neo4j.auth.username }}
+            - name: NEO4J_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.postgresql.credentialsSecretName }}
-                  key: {{ .Values.postgresql.credentialsSecretPasswordKey }}
-            - name: PG_HOST
-              value: {{ .Values.postgresql.host }}
-            - name: PG_PORT
-              value: {{ .Values.postgresql.port | quote }}
-            - name: PG_DATABASE
-              value: {{ .Values.postgresql.database }}
+                  name: {{ .Values.neo4j.auth.secretName }}
+                  key: {{ .Values.neo4j.auth.passwordKey }}
+            - name: NATS_HOST
+              value: {{ .Values.nats.host }}
+            - name: NATS_PORT
+              value: {{ .Values.nats.port | quote }}
+            - name: LOG_LEVEL
+              value: {{ .Values.logLevel }}
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:

@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "chat.fullname" . }}
+  name: {{ include "profiles.fullname" . }}
   labels:
-    {{- include "chat.labels" . | nindent 4 }}
+    {{- include "profiles.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "chat.selectorLabels" . | nindent 6 }}
+      {{- include "profiles.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,7 +18,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "chat.labels" . | nindent 8 }}
+        {{- include "profiles.labels" . | nindent 8 }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -27,7 +27,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "chat.serviceAccountName" . }}
+      serviceAccountName: {{ include "profiles.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -41,16 +41,6 @@ spec:
               containerPort: {{ .Values.service.port }}
               protocol: TCP
           env:
-            - name: NODE_ENV
-              value: {{ .Values.nodeEnv }}
-            - name: LOG_LEVEL
-              value: {{ .Values.logLevel }}
-            - name: SERVER_PORT
-              value: {{ .Values.service.port | quote }}
-            - name: SERVER_HOST
-              value: "0.0.0.0"
-            - name: APPLICATION_SERVICE_URL
-              value: "{{ .Values.aplicationServiceUrl }}"
             - name: PG_USER
               value: {{ .Values.postgresql.username }}
             - name: PG_PASSWORD
@@ -64,6 +54,37 @@ spec:
               value: {{ .Values.postgresql.port | quote }}
             - name: PG_DATABASE
               value: {{ .Values.postgresql.database }}
+            - name: SERVER_PORT
+              value: {{ .Values.service.port | quote }}
+            - name: JOB_SERVICE_URL
+              value: {{ .Values.jobServiceUrl }}
+            - name: IMAGE_GENERATOR_SERVICE_URL
+              value: {{ .Values.imageGeneratorServiceUrl }}
+            - name: KEYCLOAK_URL
+              value: {{ .Values.keycloak.url }}
+            - name: KEYCLOAK_CLIENT_ID
+              value: {{ .Values.keycloak.clientId }}
+            - name: KEYCLOAK_SERVICE_ACCOUNT_USERNAME
+              value: {{ .Values.keycloak.auth.user }}
+            - name: KEYCLOAK_SERVICE_ACCOUNT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.keycloak.auth.passwordSecretName }}
+                  key: {{ .Values.keycloak.auth.passwordSecretKey }}
+            - name: MINIO_URL
+              value: {{ .Values.minio.url }}
+            - name: MINIO_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.minio.auth.secretName }}
+                  key: {{ .Values.minio.auth.accessKey }}
+            - name: MINIO_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.minio.auth.secretName }}
+                  key: {{ .Values.minio.auth.secretKey }}
+            - name: MINIO_BUCKET_NAME
+              value: {{ .Values.minio.bucketName }}
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
