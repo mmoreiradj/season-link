@@ -2,6 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import baseQueryConfig from 'common/helpers/base-query-fn';
 import JobOfferType from '../types/job-offer.type';
 import Advantage from '../types/advantage.type';
+import { Application } from '../types/applications.type';
 
 export const JOB_OFFERS_API_REDUCER_KEY = 'jobOffersApi';
 

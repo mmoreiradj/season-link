@@ -3,7 +3,7 @@ import { StyleSheet, View, Text } from 'react-native';
 import { Route, Routes, useNavigate } from 'react-router-native';
 import EmailSentPage from 'domains/profile/pages/email-sent';
 import EmailValidatedPage from 'domains/profile/pages/email-validated';
-import HistoryPage from 'src/pages/history';
+
 import LoginPage from 'src/pages/login';
 import ProfileDeletePage from 'domains/profile/pages/profile-delete';
 import OnboardingPage from 'domains/profile/pages/profile-onboarding';
@@ -25,6 +25,7 @@ import SettingsPage from 'domains/profile/pages/profile-settings';
 import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import ChatPage from 'domains/chat/pages/chats';
+import HistoryPage from 'domains/profile/pages/profile-history';
 
 export default function App() {
   const auth = useSelector((state: RootState) => state.auth);
