@@ -6,12 +6,12 @@ import { RootState } from 'common/store/store';
 import { setAuth } from 'common/store/auth/authSlice';
 import { useNavigate } from 'react-router-native';
 import React from 'react';
-import HistoryPage from 'src/pages/history';
 
 import ScorePage from 'domains/profile/pages/profile-score';
 import JobPage from 'domains/job-offers/pages/job';
 import SettingsPage from 'domains/profile/pages/profile-settings';
 import ChatPage from 'domains/chat/pages/chats';
+import HistoryPage from 'domains/profile/pages/profile-history';
 
 export function Home() {
   const [index, setIndex] = React.useState(0);

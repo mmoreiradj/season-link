@@ -69,7 +69,10 @@ export class RatingsController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') companyId: string, @Param('id') id: string) {
+  async findOne(
+    @Param('companyId') companyId: string,
+    @Param('id') id: string,
+  ) {
     const rating = await this.ratingsService.findOne(id);
 
     if (rating.companyId !== companyId) {

@@ -38,20 +38,18 @@ const ChatPage = () => {
   }, []);
 
   return (
-    <View>
+    <>
       <Appbar.Header>
         <Appbar.Content title='Applications' />
       </Appbar.Header>
       <Divider />
 
-      <View>
-        <FlatList
-          data={applications}
-          keyExtractor={(app) => app.id}
-          renderItem={renderItem}
-        />
-      </View>
-    </View>
+      <FlatList
+        data={applications}
+        keyExtractor={(app) => app.id}
+        renderItem={renderItem}
+      />
+    </>
   );
 };
 
