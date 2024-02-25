@@ -4,11 +4,15 @@ import { Button, Text } from 'react-native-paper';
 import { Rating } from 'react-native-ratings';
 import AdvantageList from './advantage-list';
 import { useTranslation } from 'react-i18next';
-import { useGetCompanyQuery } from '../store/companies.api';
+import {
+  useGetCompanyQuery,
+  useGetCompanyRatingQuery,
+} from '../store/companies.api';
 import { useGetJobQuery } from '../store/jobs.api';
 import { useGetJobOfferAdvantagesQuery } from '../store/job-offers.api';
 import { useNavigate } from 'react-router-native';
 import { useApplyMutation } from '../store/applications.api';
+import { useEffect } from 'react';
 
 export type JobDetailsProps = {
   jobOffer: JobOfferType;
@@ -26,6 +30,11 @@ export const JobDetails = (props: JobDetailsProps) => {
   const { data: job, error: jobError } = useGetJobQuery(props.jobOffer.jobId);
   const { data: advantages, error: advantagesError } =
     useGetJobOfferAdvantagesQuery(props.jobOffer.id);
+
+  const { data: rating, error: ratingError } = useGetCompanyRatingQuery(
+    props.jobOffer.companyId,
+    { skip: !props.jobOffer.companyId }
+  );
 
   // Generate an application then navigate to the chat
   const handleApply = async () => {
@@ -45,8 +54,7 @@ export const JobDetails = (props: JobDetailsProps) => {
             {`${t('jobOffers:detail:jobTitleSeparator')} ${company?.name}`}
           </Text>
 
-          {/** TODO: Use API */}
-          <Rating startingValue={3.5} readonly={true} imageSize={18} />
+          <Rating startingValue={rating ?? 0} readonly={true} imageSize={18} />
         </View>
       </View>
       <View>

@@ -8,6 +8,7 @@ import CompanyType from '../types/company.type';
 import { CompanyRating } from '../types/company-rating';
 import { CreateRatingDto } from '../types/create-company-rating';
 import AuthService from 'domains/auth/services/auth.service';
+import { CompanyRatingStats } from '../types/company-rating-stats';
 
 export const COMPANIES_API_REDUCER_KEY = 'companiesApi';
 
@@ -32,6 +33,23 @@ export const companiesApi = createApi({
               { type: 'Company', id: 'LIST' },
             ]
           : [{ type: 'Company', id: 'LIST' }],
+    }),
+
+    getCompanyRating: builder.query<number, string>({
+      async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
+        const ratingsRequest = await fetchWithBQ(
+          `/companies/${_arg}/ratings/stats`
+        );
+        if (ratingsRequest.error) {
+          return { error: ratingsRequest.error as FetchBaseQueryError };
+        }
+
+        const ratings = ratingsRequest.data as CompanyRatingStats;
+
+        return { data: ratings.avg };
+      },
+      providesTags: (result, error, id) =>
+        result ? [{ type: 'Company', id }] : [],
     }),
 
     getCompanyRatings: builder.query<CompanyRating[], string>({
@@ -89,4 +107,5 @@ export const {
   useGetCompaniesQuery,
   useGetIsCompanyRatedQuery,
   useRateCompanyMutation,
+  useGetCompanyRatingQuery,
 } = companiesApi;
