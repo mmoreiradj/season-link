@@ -1,0 +1,143 @@
+---
+- name: Create a Keycloak Realm
+  community.general.keycloak_realm:
+    auth_keycloak_url: "{{ lookup('env', 'KEYCLOAK_AUTH_URL') }}"
+    auth_username: "{{ lookup('env', 'KEYCLOAK_USERNAME') }}"
+    auth_password: "{{ lookup('env', 'KEYCLOAK_PASSWORD') }}"
+    auth_realm: master
+    id: season-link
+    realm: season-link
+    state: present
+
+- name: Create Mobile App Client
+  community.general.keycloak_client:
+    auth_keycloak_url: "{{ lookup('env', 'KEYCLOAK_AUTH_URL') }}"
+    auth_username: "{{ lookup('env', 'KEYCLOAK_USERNAME') }}"
+    auth_password: "{{ lookup('env', 'KEYCLOAK_PASSWORD') }}"
+    auth_realm: master
+    client_id: mobile-app
+    realm: season-link
+    state: present
+    redirect_uris:
+      - "exp://127.0.0.1:4354/*"
+
+- name: Create client_candidate Role in Mobile App Client
+  community.general.keycloak_role:
+    auth_keycloak_url: "{{ lookup('env', 'KEYCLOAK_AUTH_URL') }}"
+    auth_username: "{{ lookup('env', 'KEYCLOAK_USERNAME') }}"
+    auth_password: "{{ lookup('env', 'KEYCLOAK_PASSWORD') }}"
+    auth_realm: master
+    realm: season-link
+    client_id: mobile-app
+    state: present
+    name: client_candidate
+
+- name: Create Realm Role Candidate
+  community.general.keycloak_role:
+    auth_keycloak_url: "{{ lookup('env', 'KEYCLOAK_AUTH_URL') }}"
+    auth_username: "{{ lookup('env', 'KEYCLOAK_USERNAME') }}"
+    auth_password: "{{ lookup('env', 'KEYCLOAK_PASSWORD') }}"
+    auth_realm: master
+    realm: season-link
+    state: present
+    name: candidate
+    composite: true
+    composites:
+      - client_id: mobile-app
+        name: client_candidate
+        state: present
+
+- name: Create client_recruiter Role in Mobile App Client
+  community.general.keycloak_role:
+    auth_keycloak_url: "{{ lookup('env', 'KEYCLOAK_AUTH_URL') }}"
+    auth_username: "{{ lookup('env', 'KEYCLOAK_USERNAME') }}"
+    auth_password: "{{ lookup('env', 'KEYCLOAK_PASSWORD') }}"
+    auth_realm: master
+    realm: season-link
+    client_id: mobile-app
+    state: present
+    name: client_recruiter
+    composite: true
+    composites:
+      - client_id: mobile-app
+        name: client_candidate
+        state: present
+
+- name: Create Realm Role Recruiter
+  community.general.keycloak_role:
+    auth_keycloak_url: "{{ lookup('env', 'KEYCLOAK_AUTH_URL') }}"
+    auth_username: "{{ lookup('env', 'KEYCLOAK_USERNAME') }}"
+    auth_password: "{{ lookup('env', 'KEYCLOAK_PASSWORD') }}"
+    auth_realm: master
+    realm: season-link
+    state: present
+    name: recruiter
+    composite: true
+    composites:
+      - client_id: mobile-app
+        name: client_recruiter
+        state: present
+
+- name: Create client_admin Role in Mobile App Client
+  community.general.keycloak_role:
+    auth_keycloak_url: "{{ lookup('env', 'KEYCLOAK_AUTH_URL') }}"
+    auth_username: "{{ lookup('env', 'KEYCLOAK_USERNAME') }}"
+    auth_password: "{{ lookup('env', 'KEYCLOAK_PASSWORD') }}"
+    auth_realm: master
+    realm: season-link
+    client_id: mobile-app
+    state: present
+    name: client_admin
+    composite: true
+    composites:
+      - client_id: mobile-app
+        name: client_recruiter
+        state: present
+
+- name: Create Realm Role Admin
+  community.general.keycloak_role:
+    auth_keycloak_url: "{{ lookup('env', 'KEYCLOAK_AUTH_URL') }}"
+    auth_username: "{{ lookup('env', 'KEYCLOAK_USERNAME') }}"
+    auth_password: "{{ lookup('env', 'KEYCLOAK_PASSWORD') }}"
+    auth_realm: master
+    realm: season-link
+    state: present
+    name: admin
+    composite: true
+    composites:
+      - client_id: mobile-app
+        name: client_admin
+        state: present
+
+- name: Create profile manager user
+  community.general.keycloak_user:
+    auth_keycloak_url: "{{ lookup('env', 'KEYCLOAK_AUTH_URL') }}"
+    auth_username: "{{ lookup('env', 'KEYCLOAK_USERNAME') }}"
+    auth_password: "{{ lookup('env', 'KEYCLOAK_PASSWORD') }}"
+    auth_realm: master
+    realm: season-link
+    state: present
+    enabled: true
+    username: profiles
+    email: profilemanager@season-link.com
+    emailVerified: true
+    firstName: Profile
+    lastName: Manager
+    force: true
+    credentials:
+      - type: password
+        value: "{{ lookup('env', 'KEYCLOAK_PROFILE_MANAGER_PASSWORD') }}"
+        temporary: false
+
+- name: Add manager-users and manage-realm roles from realm-management client to profile manager user
+  community.general.keycloak_user_rolemapping:
+    auth_keycloak_url: "{{ lookup('env', 'KEYCLOAK_AUTH_URL') }}"
+    auth_username: "{{ lookup('env', 'KEYCLOAK_USERNAME') }}"
+    auth_password: "{{ lookup('env', 'KEYCLOAK_PASSWORD') }}"
+    auth_realm: master
+    realm: season-link
+    client_id: realm-management
+    target_username: profiles
+    roles:
+      - name: manage-realm
+      - name: manage-users
