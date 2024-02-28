@@ -28,7 +28,8 @@ VALUES ('cff99cd1-fb3e-45f4-8475-10c3ae583028', 'Agriculture, Viticulture, Pêch
        ('935bcd96-5596-4e1c-8724-2692cd74e4a4', 'Logistique, Transport'), --10
        ('dddacca7-2f85-40fd-807d-8e6392e8127f', 'Baby sitting, Services à la personne'), --11
        ('fad6a1a4-0fb1-42f4-8d86-13f156881643', 'Commerce, Achats, Vente'), --12
-       ('bd9ffdde-e47d-40e8-9596-ef04ba3953b4', 'SPA, Esthétique, Coiffure'); --13
+       ('bd9ffdde-e47d-40e8-9596-ef04ba3953b4', 'SPA, Esthétique, Coiffure'), --13
+       ('bd9ffdde-e47d-40e8-9999-ef04ba3953b4', 'Autres'); --14
 
 -- Agriculture, Viticulture, Pêche (Catégorie 'cff99cd1-fb3e-45f4-8475-10c3ae583028') :
 INSERT INTO JOB(id, title, category_id)
@@ -286,3 +287,7 @@ values ('dc4f4ad9-8436-4c65-8461-69771ce41459', 'SPA manager', 'bd9ffdde-e47d-40
        ('4cdd53dd-f939-4ac1-b82b-054ea242f532', 'Métiers de l''onglerie', 'bd9ffdde-e47d-40e8-9596-ef04ba3953b4'),
        ('cae69c36-20d7-4e1f-90b1-a8e91a2c38e4', 'Masseu.r.se', 'bd9ffdde-e47d-40e8-9596-ef04ba3953b4'),
        ('3f12a516-284c-4bc4-91c6-8c694a803193', 'Coiffeu.r.se', 'bd9ffdde-e47d-40e8-9596-ef04ba3953b4');
+
+-- Autre (Catégorie 14) :
+INSERT INTO JOB(id, title, category_id)
+values ('bd9ffdde-e47d-40e8-9999-ef04ba3953b4', 'Autre', 'bd9ffdde-e47d-40e8-9999-ef04ba3953b4');
