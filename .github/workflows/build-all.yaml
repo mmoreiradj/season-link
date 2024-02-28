@@ -33,7 +33,7 @@ jobs:
           - image_name: "recommendations"
             dockerfile_path: "apps/recommendations/Dockerfile"
             context: "apps/recommendations"
-    uses: mmoreiradj/season-link/.github/workflows/build.yaml@make/ci
+    uses: mmoreiradj/season-link/.github/workflows/build.yaml@main
     with:
       image_name: ${{ matrix.inputs.image_name }}
       dockerfile_path: ${{ matrix.inputs.dockerfile_path }}
