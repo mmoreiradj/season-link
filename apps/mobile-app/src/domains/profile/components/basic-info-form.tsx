@@ -1,7 +1,7 @@
 import { useGetJobCategoriesQuery } from 'domains/job-categories/store/job-category.api';
 import JobCategoryType from 'domains/job-categories/types/job-category.type';
 import { Formik } from 'formik';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { StyleProp, View, ViewStyle } from 'react-native';
 import { Button, List, Switch, Text, TextInput } from 'react-native-paper';
 import { DatePickerInput } from 'react-native-paper-dates';
@@ -11,22 +11,11 @@ import CandidateType from '../types/candidate';
 import { useGetCandidateQuery } from '../store/profile.api';
 import uuid from 'react-native-uuid';
 import { useGetJobsQuery } from 'domains/job-offers/store/jobs.api';
+import * as Yup from 'yup';
+import { toSimpleISOString } from 'common/utils/date';
 
 export type BasicInfoFormProps = {
   onSubmit: (values: CandidateType) => void;
-};
-
-const inlineFormViewStyle: StyleProp<ViewStyle> = {
-  flexDirection: 'row',
-  gap: 5,
-  justifyContent: 'space-evenly',
-};
-const inlineFormItemViewStyle: StyleProp<ViewStyle> = {
-  flex: 1,
-};
-
-const settingSectionViewStyle: StyleProp<ViewStyle> = {
-  marginBottom: 20,
 };
 
 type BasicFormType = Omit<
@@ -41,34 +30,50 @@ type BasicFormType = Omit<
 function toCandidateType(formValues: BasicFormType): CandidateType {
   return {
     ...formValues,
-    birth_date: formValues.birth_date.toISOString(),
-    available_from: formValues.available_from.toISOString(),
-    available_to: formValues.available_to.toISOString(),
+    birth_date: toSimpleISOString(formValues.birth_date),
+    available_from: toSimpleISOString(formValues.available_from),
+    available_to: toSimpleISOString(formValues.available_to),
   };
 }
+
+const BasicInfoSchema = Yup.object().shape({
+  first_name: Yup.string().required('Required'),
+  last_name: Yup.string().required('Required'),
+  birth_date: Yup.date().required('Required'),
+  nationality_country_id: Yup.string().required('Required'),
+  description: Yup.string().required('Required'),
+  email: Yup.string().email('Invalid email').required('Required'),
+  phone_number: Yup.string().required('Required'),
+  address: Yup.string().required('Required'),
+  is_available: Yup.boolean().required('Required'),
+});
 
 export const BasicInfoForm = (props: BasicInfoFormProps) => {
   const { data: jobData, error, isLoading } = useGetJobsQuery();
 
   const { data: candidate, error: profileError } = useGetCandidateQuery();
 
-  const initialValues: BasicFormType = {
-    id: candidate?.id ?? (uuid.v4() as string),
-    first_name: candidate?.first_name ?? '',
-    last_name: candidate?.last_name ?? '',
-    birth_date: new Date(Date.parse(candidate?.birth_date ?? Date())),
-    nationality_country_id: candidate?.nationality_country_id ?? '',
-    description: candidate?.description ?? '',
-    email: candidate?.email ?? '',
-    phone_number: candidate?.phone_number ?? '',
-    address: candidate?.address ?? '',
-    gender: candidate?.gender ?? 0,
-    is_available: candidate?.is_available ?? false,
-    available_from: new Date(Date.parse(candidate?.available_from ?? Date())),
-    available_to: new Date(Date.parse(candidate?.available_to ?? Date())),
-    place: candidate?.place ?? '',
-    job_id: candidate?.job_id ?? '',
-  };
+  const initialValues: BasicFormType = useMemo(() => {
+    return {
+      id: candidate?.id ?? (uuid.v4() as string),
+      first_name: candidate?.first_name ?? '',
+      last_name: candidate?.last_name ?? '',
+      birth_date: new Date(Date.parse(candidate?.birth_date ?? Date())),
+      nationality_country_id: candidate?.nationality_country_id ?? '',
+      description: candidate?.description ?? '',
+      email: candidate?.email ?? '',
+      phone_number: candidate?.phone_number ?? '',
+      address: candidate?.address ?? '',
+      gender: candidate?.gender ?? 0,
+      is_available: candidate?.is_available ?? false,
+      available_from: new Date(
+        Date.parse(candidate?.available_from ?? new Date(0).toISOString())
+      ),
+      available_to: new Date(Date.parse(candidate?.available_to ?? Date())),
+      place: candidate?.place ?? '',
+      job_id: candidate?.job_id ?? 'bd9ffdde-e47d-40e8-9999-ef04ba3953b4',
+    };
+  }, [candidate]);
 
   //console.log({ initialValues, props });
 
@@ -77,9 +82,19 @@ export const BasicInfoForm = (props: BasicInfoFormProps) => {
       enableReinitialize={true}
       initialValues={initialValues}
       onSubmit={(values) => console.log(values)}
+      validationSchema={BasicInfoSchema}
     >
-      {({ handleChange, handleBlur, handleSubmit, values, setFieldValue }) => (
-        <View style={{ padding: 20 }}>
+      {({
+        handleChange,
+        handleBlur,
+        handleSubmit,
+        values,
+        setFieldValue,
+        isValid,
+        dirty,
+        errors,
+      }) => (
+        <View>
           {/* Basic info part */}
           <Text variant='titleLarge'>Profile</Text>
           <View style={settingSectionViewStyle}>
@@ -246,6 +261,7 @@ export const BasicInfoForm = (props: BasicInfoFormProps) => {
             <Button
               mode='contained'
               onPress={() => props.onSubmit?.(toCandidateType(values))}
+              disabled={!(isValid && dirty)}
             >
               Save
             </Button>
@@ -254,4 +270,17 @@ export const BasicInfoForm = (props: BasicInfoFormProps) => {
       )}
     </Formik>
   );
+};
+
+const inlineFormViewStyle: StyleProp<ViewStyle> = {
+  flexDirection: 'row',
+  gap: 5,
+  justifyContent: 'space-evenly',
+};
+const inlineFormItemViewStyle: StyleProp<ViewStyle> = {
+  flex: 1,
+};
+
+const settingSectionViewStyle: StyleProp<ViewStyle> = {
+  marginBottom: 20,
 };
