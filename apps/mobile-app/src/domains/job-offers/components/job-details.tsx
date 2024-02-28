@@ -13,6 +13,7 @@ import { useGetJobOfferAdvantagesQuery } from '../store/job-offers.api';
 import { useNavigate } from 'react-router-native';
 import { useApplyMutation } from '../store/applications.api';
 import { useEffect } from 'react';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export type JobDetailsProps = {
   jobOffer: JobOfferType;
@@ -87,7 +88,9 @@ export const JobDetails = (props: JobDetailsProps) => {
         >
           {t('jobOffers:detail:description')}
         </Text>
-        <Text>{props.jobOffer.description}</Text>
+        <ScrollView style={{ height: 160 }}>
+          <Text>{props.jobOffer.description}</Text>
+        </ScrollView>
 
         <Button
           mode='contained'
