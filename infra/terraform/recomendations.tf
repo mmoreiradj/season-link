@@ -36,9 +36,4 @@ resource "helm_release" "recommendations" {
   repository = "../charts"
   chart      = "recommendations"
   version    = "0.1.0"
-
-  set {
-    name  = "image.tag"
-    value = var.app_version
-  }
 }
