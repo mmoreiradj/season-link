@@ -5,8 +5,13 @@ use anyhow::anyhow;
 use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
+    Json,
 };
 
+use lettre::{
+    transport::smtp::{authentication::Credentials, client::Tls},
+    AsyncSmtpTransport, AsyncTransport, Message, Tokio1Executor,
+};
 use serde_json::json;
 use sqlx::postgres::PgQueryResult;
 use uuid::Uuid;
@@ -172,5 +177,97 @@ pub async fn create_keycloak_user(dto: &CreateCandidate) -> Result<Uuid, AppErro
         )));
     }
 
+    // Finally add the required realm role: 'candidate'
+    // First get the realm role representation
+    let realm_role_response = client
+        .get(format!(
+            "{}/admin/realms/season-link/roles/candidate",
+            &root_url
+        ))
+        .header("Authorization", format!("Bearer {}", &token))
+        .send()
+        .await?;
+
+    if !realm_role_response.status().is_success() {
+        return Err(AppError(anyhow!(
+            "Failed to get the realm role candidate: {}",
+            realm_role_response.status()
+        )));
+    }
+
+    let realm_role = realm_role_response.json::<serde_json::Value>().await?;
+
+    // Then add the role into  the user realm role mapping
+    let realm_role_mapping_response = client
+        .post(format!(
+            "{}/admin/realms/season-link/users/{}/role-mappings/realm",
+            &root_url, &uuid
+        ))
+        .header("Authorization", format!("Bearer {}", &token))
+        .json(&json!([{
+            "id": &realm_role.get("id").expect("No id found !"),
+            "name": "candidate"
+        }]))
+        .send()
+        .await?;
+
+    if !realm_role_mapping_response.status().is_success() {
+        return Err(AppError(anyhow!(
+            "Failed to apply the realm role candidate: {}",
+            realm_role_mapping_response.status()
+        )));
+    }
+
     Ok(uuid)
+}
+
+/// Disable the profile
+pub async fn disable_keycloak_user(user_id: &Uuid) -> Result<(), AppError> {
+    let token = refresh_token().await?;
+    let client = reqwest::Client::new();
+    let root_url = env::var("keycloak_url").expect("No keycloak URL !");
+
+    let update_user_body = json!({
+        "enabled": false
+    });
+
+    client
+        .put(root_url.clone() + &format!("/admin/realms/season-link/users/{}", user_id.to_string()))
+        .json(&update_user_body)
+        .header("Authorization", "Bearer ".to_owned() + &token)
+        .send()
+        .await?;
+
+    return Ok(());
+}
+
+pub async fn send_mail(email: Message) -> Result<(), AppError> {
+    let creds = Credentials::new(
+        env::var("SMTP_USER").expect("no smtp user !"),
+        env::var("SMTP_PASSWORD").expect("no smtp password !"),
+    );
+
+    let sender: AsyncSmtpTransport<Tokio1Executor> = AsyncSmtpTransport::<Tokio1Executor>::relay(
+        &env::var("SMTP_HOST").expect("No smtp host !"),
+    )?
+    .tls(Tls::None)
+    .port(
+        env::var("SMTP_PORT")
+            .expect("No smtp port  !")
+            .parse()
+            .unwrap(),
+    )
+    .credentials(creds)
+    .build();
+
+    match sender.send(email).await {
+        Ok(_) => {
+            println!("mail sent");
+            Ok(())
+        }
+        Err(err) => {
+            println!("mail error, {:?}", err);
+            Err(AppError(err.into()))
+        }
+    }
 }

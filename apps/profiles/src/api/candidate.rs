@@ -6,6 +6,7 @@ use axum::{
     Json,
 };
 use axum_valid::Valid;
+use lettre::Message;
 use sqlx::Row;
 use uuid::Uuid;
 
@@ -23,7 +24,7 @@ use super::{
         list_candidate::{ListCandidate, SubscriptionLevel},
     },
     middlewares::auth_headers::AuthHeaders,
-    utils::{check_query_effective, AppError},
+    utils::{check_query_effective, disable_keycloak_user, send_mail, AppError},
 };
 
 /// Create the candidate inside the DB
@@ -182,17 +183,45 @@ pub async fn update_candidate(
     Ok(Json(candidate))
 }
 
-/// Delete the candidate inside the DB
+/// Consider the candidate "deleted"
+/// The data is anonymised rather than ensuring all services have no data related to the user
 pub async fn delete_candidate(
     State(state): State<Arc<SharedState>>,
     Path(user_id): Path<Uuid>,
 ) -> axum::response::Result<(), AppError> {
-    let result = sqlx::query("DELETE FROM public.candidate WHERE id=$1;")
+    // First make the user anonymous
+    let result = sqlx::query("
+        update candidate  
+        set first_name = 'DELETED', last_name = 'USER', birth_date = to_timestamp(0), description='', email='deleted@candidate.com', phone_number='', address='', is_available=false, place='' 
+        where id=$1;
+        ")
         .bind(user_id)
         .execute(&state.pool)
         .await?;
 
     check_query_effective(result)?;
 
+    // Then disable the user on the keycloak side of things
+    disable_keycloak_user(&user_id).await?;
+
     Ok(())
+}
+
+pub async fn request_account_deletion(
+    State(state): State<Arc<SharedState>>,
+    AuthHeaders {
+        user_id: user_uuid,
+        roles: _,
+        request_id: _,
+    }: AuthHeaders,
+) -> axum::response::Result<(), AppError> {
+    // Just send a mail lmao
+
+    let email = Message::builder()
+        .from("noreply@season-link.com".parse()?)
+        .to("candidate@season-link.com".parse()?)
+        .subject("Deletion request")
+        .body(format!("The account with the uuid {} requested a deletion. Use the DELETE endpoint to confirm the deletion.", user_uuid.to_string()))?;
+
+    send_mail(email).await
 }

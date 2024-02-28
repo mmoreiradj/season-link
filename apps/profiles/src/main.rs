@@ -30,6 +30,7 @@ use axum::{
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 
 use crate::api::{
+    candidate::request_account_deletion,
     cv::{get_cv, get_cv_self, has_uploaded_cv, has_uploaded_cv_self},
     experience::get_experiences_self,
     picture::get_candidate_picture,
@@ -76,7 +77,9 @@ async fn main() -> anyhow::Result<()> {
         .route("/profiles/users", get(get_candidates))
         .route(
             "/profiles/user/me",
-            put(update_candidate).get(get_candidate_self),
+            put(update_candidate)
+                .get(get_candidate_self)
+                .delete(request_account_deletion),
         )
         .route(
             "/profiles/user/:user_id",
