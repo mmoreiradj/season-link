@@ -1,0 +1,5 @@
+---
+- name: Setup Season Link Realm
+  hosts: localhost
+  roles:
+    - realm
