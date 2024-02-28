@@ -17,12 +17,6 @@ export function Home() {
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
     {
-      key: 'score',
-      title: 'Score',
-      focusedIcon: 'star',
-      unfocusedIcon: 'star-outline',
-    },
-    {
       key: 'history',
       title: 'History',
       focusedIcon: 'book-account',
@@ -49,7 +43,6 @@ export function Home() {
   ]);
 
   const renderScene = BottomNavigation.SceneMap({
-    score: ScorePage,
     history: HistoryPage,
     jobs: JobPage,
     messages: ChatPage,
