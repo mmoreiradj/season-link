@@ -65,7 +65,7 @@ const SettingsPage = () => {
       </Appbar.Header>
       <Divider />
 
-      <ScrollView>
+      <ScrollView style={{ padding: 10, paddingHorizontal: 20 }}>
         <BasicInfoForm onSubmit={console.log} />
 
         <Divider />

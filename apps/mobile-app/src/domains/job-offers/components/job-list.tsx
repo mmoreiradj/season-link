@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, FlatList, View } from 'react-native';
+import { ActivityIndicator, FlatList, ScrollView, View } from 'react-native';
 import { Appbar, Divider, Text } from 'react-native-paper';
 import { StyleSheet } from 'react-native';
 import { useGetJobOffersQuery } from '../store/job-offers.api';
@@ -12,6 +12,8 @@ import App from 'src/App';
 import JobOfferType from '../types/job-offer.type';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { JobDetails } from './job-details';
+import { LoadingState } from 'common/components/loading-state';
+import { EmptyState } from 'common/components/empty-state';
 
 const ITEM_HEIGHT = 70;
 
@@ -59,6 +61,17 @@ export default function JobList() {
 
   return (
     <>
+      {/* Empty state */}
+      {!isLoading && data?.length == 0 && (
+        <EmptyState title='Come back later' />
+      )}
+
+      {/* Loading state */}
+      {isLoading && (
+        <LoadingState title={"We're sure you're working hard as well !"} />
+      )}
+
+      {/* Full state */}
       <FlatList
         data={data}
         renderItem={renderItem}

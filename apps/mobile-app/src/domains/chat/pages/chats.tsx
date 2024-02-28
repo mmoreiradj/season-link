@@ -11,6 +11,8 @@ import {
 import React from 'react';
 import { useNavigate } from 'react-router-native';
 import { use } from 'i18next';
+import { EmptyState } from 'common/components/empty-state';
+import { LoadingState } from 'common/components/loading-state';
 
 const ChatPage = () => {
   const { t } = useTranslation();
@@ -44,11 +46,24 @@ const ChatPage = () => {
       </Appbar.Header>
       <Divider />
 
-      <FlatList
-        data={applications}
-        keyExtractor={(app) => app.id}
-        renderItem={renderItem}
-      />
+      {/* Empty state */}
+      {!isApplicationsLoading && applications?.length == 0 && (
+        <EmptyState title='Try to apply some more !' />
+      )}
+
+      {/* Loading state */}
+      {isApplicationsLoading && (
+        <LoadingState title={'Make your best impression out there !'} />
+      )}
+
+      {/* Full state */}
+      {applications && (
+        <FlatList
+          data={applications}
+          keyExtractor={(app) => app.id}
+          renderItem={renderItem}
+        />
+      )}
     </>
   );
 };
