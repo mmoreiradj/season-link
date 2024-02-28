@@ -6,11 +6,6 @@ resource "helm_release" "gateway" {
   chart      = "gateway"
   version    = "0.1.0"
 
-  set {
-    name  = "image.tag"
-    value = var.app_version
-  }
-
   values = [
     file("${path.module}/values/gateway.yaml"),
   ]
