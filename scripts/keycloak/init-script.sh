@@ -201,6 +201,13 @@ kcadm.sh add-roles \
     -r "$KEYCLOAK_NEW_REALM" \
     --uusername "$KEYCLOAK_PROFILES_USER" \
 
+kcadm.sh add-roles \
+    --config /tmp/config \
+    --cclientid realm-management \
+    --rolename manage-realm \
+    -r "$KEYCLOAK_NEW_REALM" \
+    --uusername "$KEYCLOAK_PROFILES_USER" \
+
 # Adding dev users
 if [ "$DEV" = "true" ]; then
     echo "Adding dev users"
