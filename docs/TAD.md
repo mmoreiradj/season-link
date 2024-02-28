@@ -173,7 +173,7 @@ The microservice architecture has several drawbacks:
 
 ### 1.4. When to use the microservice architecture?
 
-The microservice architecture is not the alpha and omaga. It has its own advantages and disadvantages, and it is not suitable for all applications.
+The microservice architecture is not the alpha and omega. It has its own advantages and disadvantages, and it is not suitable for all applications.
 
 It is suitable for large-scale applications, that have a lot of teams working on them, and that are expected to evolve rapidly. It could also be suitable for smaller application if they have different parts that have different scaling needs, or difficult processes that can be isolated in a service.
 
