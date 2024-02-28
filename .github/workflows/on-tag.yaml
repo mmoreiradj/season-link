@@ -14,7 +14,7 @@ jobs:
 
   update-chart-version:
     runs-on: ubuntu-latest
-    # needs: build
+    needs: build
     permissions:
       contents: write
     steps:
@@ -25,18 +25,18 @@ jobs:
           ref: make/ci
       - name: Update Chart Version
         run: |
-          echo "Updating chart version to ${{ github.ref }}"
-          sed -i "s/appVersion: .*/appVersion: ${{ github.ref }}/g" infra/charts/chat/Chart.yaml
-          sed -i "s/appVersion: .*/appVersion: ${{ github.ref }}/g" infra/charts/companies/Chart.yaml
-          sed -i "s/appVersion: .*/appVersion: ${{ github.ref }}/g" infra/charts/gateway/Chart.yaml
-          sed -i "s/appVersion: .*/appVersion: ${{ github.ref }}/g" infra/charts/job-offers/Chart.yaml
-          sed -i "s/appVersion: .*/appVersion: ${{ github.ref }}/g" infra/charts/jobs/Chart.yaml
-          sed -i "s/appVersion: .*/appVersion: ${{ github.ref }}/g" infra/charts/profiles/Chart.yaml
-          sed -i "s/appVersion: .*/appVersion: ${{ github.ref }}/g" infra/charts/recommendations/Chart.yaml
+          echo "Updating chart version to ${{ github.ref_name }}"
+          sed -i "s/appVersion: .*/appVersion: ${{ github.ref_name }}/g" infra/charts/chat/Chart.yaml
+          sed -i "s/appVersion: .*/appVersion: ${{ github.ref_name }}/g" infra/charts/companies/Chart.yaml
+          sed -i "s/appVersion: .*/appVersion: ${{ github.ref_name }}/g" infra/charts/gateway/Chart.yaml
+          sed -i "s/appVersion: .*/appVersion: ${{ github.ref_name }}/g" infra/charts/job-offers/Chart.yaml
+          sed -i "s/appVersion: .*/appVersion: ${{ github.ref_name }}/g" infra/charts/jobs/Chart.yaml
+          sed -i "s/appVersion: .*/appVersion: ${{ github.ref_name }}/g" infra/charts/profiles/Chart.yaml
+          sed -i "s/appVersion: .*/appVersion: ${{ github.ref_name }}/g" infra/charts/recommendations/Chart.yaml
 
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
           git add infra/charts
 
-          git commit -m "bump(*): update chart version to ${{ github.ref }} [AUTO]"
+          git commit -m "bump(*): update chart version to ${{ github.ref_name }} [AUTO]"
           git push
