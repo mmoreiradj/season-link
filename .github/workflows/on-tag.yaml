@@ -6,8 +6,14 @@ on:
       - '*'
 
 jobs:
-  build:
-    permissions:
-      packages: write
-    name: Build
-    uses: mmoreiradj/season-link/.github/workflows/build-all.yaml@make/ci
+  # build:
+  #   permissions:
+  #     packages: write
+  #   name: Build
+  #   uses: mmoreiradj/season-link/.github/workflows/build-all.yaml@make/ci
+
+  update-chart:
+    name: Update Chart Version
+    uses: mmoreiradj/season-link/.github/workflows/update-chart-version.yaml@make/ci
+    with:
+      tag: ${{ github.ref }}
