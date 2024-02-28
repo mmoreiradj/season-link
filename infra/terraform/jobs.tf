@@ -40,10 +40,5 @@ resource "helm_release" "jobs" {
   chart      = "jobs"
   version    = "0.1.0"
 
-  set {
-    name  = "image.tag"
-    value = var.app_version
-  }
-
   depends_on = [helm_release.postgresql_jobs]
 }
