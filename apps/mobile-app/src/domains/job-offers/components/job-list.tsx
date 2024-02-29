@@ -17,17 +17,14 @@ import { EmptyState } from 'common/components/empty-state';
 
 const ITEM_HEIGHT = 70;
 
-export default function JobList() {
-  const { t } = useTranslation();
-  const { data, error, isLoading } = useGetJobOffersQuery();
-  const dispatch = useDispatch();
-  const [selectedJobOffer, setSelectedJobOffer] = useState<JobOfferType>();
+export type JobListProps = {
+  jobOffers: JobOfferType[];
+};
 
-  useEffect(() => {
-    if (data) {
-      dispatch(setJobOffers(data));
-    }
-  }, [data]);
+export default function JobList(props: JobListProps) {
+  const { t } = useTranslation();
+
+  const [selectedJobOffer, setSelectedJobOffer] = useState<JobOfferType>();
 
   // Data for the bottom sheet
   const snapPoints = useMemo(() => ['85%'], []);
@@ -61,19 +58,9 @@ export default function JobList() {
 
   return (
     <>
-      {/* Empty state */}
-      {!isLoading && data?.length == 0 && (
-        <EmptyState title='Come back later' />
-      )}
-
-      {/* Loading state */}
-      {isLoading && (
-        <LoadingState title={"We're sure you're working hard as well !"} />
-      )}
-
       {/* Full state */}
       <FlatList
-        data={data}
+        data={props.jobOffers}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         windowSize={5}

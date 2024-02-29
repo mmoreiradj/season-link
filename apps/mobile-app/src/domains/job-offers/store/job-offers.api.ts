@@ -38,6 +38,17 @@ export const jobOffersApi = createApi({
       providesTags: (result, error, id) =>
         result ? [{ type: 'JobOffer', id }] : [],
     }),
+
+    getRecommendedJobOffers: builder.query<JobOfferType[], string>({
+      query: (jobId) => `/recommendations?jobId=${jobId}`,
+      providesTags: (result, error, id) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: 'JobOffer', id }) as const),
+              { type: 'JobOffer', id: 'LIST' },
+            ]
+          : [{ type: 'JobOffer', id: 'LIST' }],
+    }),
   }),
 });
 
