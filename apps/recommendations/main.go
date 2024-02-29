@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"net/http"
 	"os"
 	"os/signal"
@@ -97,38 +96,12 @@ func main() {
 		}
 	}()
 
-	http.HandleFunc("/recommendations", func(w http.ResponseWriter, r *http.Request) {
-		userRequest := UserRecommendationRequest{
-			JobId:               r.URL.Query().Get("jobId"),
-			PrefferedAdvantages: r.URL.Query()["advantages"],
-		}
-
-		if userRequest.JobId == "" {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-
-		log.Info().Msgf("Received recommendation request: %+v", userRequest)
-
-		result, err := recommendationService.RecommendJobOffers(userRequest)
-		if err != nil {
-			log.Error().Msg("Error when recommending job offers: " + err.Error())
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		// Convert result to JSON byte array
-		resultJSON, err := json.Marshal(result)
-		if err != nil {
-			log.Error().Msg("Error when marshaling job offers to JSON: " + err.Error())
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		w.Write(resultJSON)
-	})
+	httpHandlers := HttpHandlersImpl{
+		recommendationService: recommendationService,
+	}
+	http.HandleFunc("/recommendations", httpHandlers.RecommendJobOffers)
+	http.HandleFunc("/health/live", httpHandlers.Liveness)
+	http.HandleFunc("/health/ready", httpHandlers.Readiness)
 
 	err = httpServer.ListenAndServe()
 	if err != nil {
