@@ -15,7 +15,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'common/store/store';
 import { emptyAuth, setAuth } from 'common/store/auth/authSlice';
 import JobPage from 'domains/job-offers/pages/job';
-import { Home } from 'common/components/HelloWorld';
+import { Home } from 'common/components/home';
 import useAuthorizationWorkflow from 'domains/auth/hooks/useAthorizationWorkflow';
 import useTokenRefresher from 'domains/auth/hooks/useTokenRefresher';
 import AuthService from 'domains/auth/services/auth.service';
@@ -26,6 +26,7 @@ import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import ChatPage from 'domains/chat/pages/chats';
 import HistoryPage from 'domains/profile/pages/profile-history';
+import FlashMessage from 'react-native-flash-message';
 
 export default function App() {
   const auth = useSelector((state: RootState) => state.auth);
@@ -102,6 +103,9 @@ export default function App() {
           )}
         </SafeAreaView>
       </GestureHandlerRootView>
+
+      {/* GLOBAL FLASH MESSAGE COMPONENT INSTANCE */}
+      <FlashMessage position='top' />
     </>
   );
 }
