@@ -57,7 +57,7 @@ resource "kubernetes_manifest" "application_argo_cd_recommendations" {
         }
         path           = "infra/charts/recommendations"
         repoURL        = "https://github.com/mmoreiradj/season-link.git"
-        targetRevision = "make/ci"
+        targetRevision = "HEAD"
       }
       syncPolicy = {
         automated = {

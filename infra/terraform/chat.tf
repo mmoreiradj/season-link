@@ -71,7 +71,7 @@ resource "kubernetes_manifest" "application_argo_cd_chat" {
         }
         path           = "infra/charts/chat"
         repoURL        = "https://github.com/mmoreiradj/season-link.git"
-        targetRevision = "make/ci"
+        targetRevision = "HEAD"
       }
       syncPolicy = {
         automated = {
