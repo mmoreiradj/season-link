@@ -110,7 +110,7 @@ func main() {
 
 		log.Info().Msgf("Received recommendation request: %+v", userRequest)
 
-		result, err := recommendationService.RecommenendJobOffers(userRequest)
+		result, err := recommendationService.RecommendJobOffers(userRequest)
 		if err != nil {
 			log.Error().Msg("Error when recommending job offers: " + err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
