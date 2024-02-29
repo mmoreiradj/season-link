@@ -26,10 +26,7 @@ export const applicationsApi = createApi({
 
     getApplications: builder.query<Application[], void>({
       query: () => 'applications',
-      providesTags: (result) =>
-        result
-          ? [...result.map(({ id }) => ({ type: 'Application', id }) as const)]
-          : ['Application'],
+      providesTags: (result) => ['Application'],
     }),
 
     getExecutedJobOffers: builder.query<JobOfferType[], void>({
