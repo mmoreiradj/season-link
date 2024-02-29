@@ -42,3 +42,59 @@ resource "helm_release" "chat" {
 
   depends_on = [helm_release.postgresql_chat]
 }
+
+resource "kubernetes_manifest" "application_argo_cd_chat" {
+  manifest = {
+    apiVersion = "argoproj.io/v1alpha1"
+    kind       = "Application"
+    metadata = {
+      labels = {
+        name = "chat"
+      }
+      name      = "chat"
+      namespace = "argo-cd"
+    }
+    spec = {
+      destination = {
+        namespace = kubernetes_namespace.season_link.metadata.0.name
+        server    = "https://kubernetes.default.svc"
+      }
+
+      project              = "default"
+      revisionHistoryLimit = 3
+      source = {
+        helm = {
+          releaseName = "chat"
+          valuesObject = {
+            fullnameOverride = "chat"
+          }
+        }
+        path           = "infra/charts/chat"
+        repoURL        = "https://github.com/mmoreiradj/season-link.git"
+        targetRevision = "make/ci"
+      }
+      syncPolicy = {
+        automated = {
+          prune      = true
+          selfHeal   = true
+          allowEmpty = true
+        }
+        retry = {
+          limit = 3
+          backoff = {
+            duration    = 5
+            factor      = 2
+            maxDuration = 60
+          }
+        }
+        syncOptions = [
+          "Validate=false",
+          "CreateNamespace=false",
+          "PrunePropagationPolicy=foreground",
+          "PruneLast=true",
+          "RespectIgnoreDifferences=true"
+        ]
+      }
+    }
+  }
+}

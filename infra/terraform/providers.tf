@@ -19,5 +19,5 @@ terraform {
     key                         = "proxmox/k3s/season-link/terraform.tfstate"
   }
 
-  required_version = "1.7.3"
+  required_version = "1.7.4"
 }

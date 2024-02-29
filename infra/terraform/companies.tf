@@ -32,13 +32,58 @@ resource "helm_release" "postgresql_companies" {
   }
 }
 
-resource "helm_release" "companies" {
-  name      = "companies"
-  namespace = kubernetes_namespace.season_link.metadata.0.name
+resource "kubernetes_manifest" "application_argo_cd_companies" {
+  manifest = {
+    apiVersion = "argoproj.io/v1alpha1"
+    kind       = "Application"
+    metadata = {
+      labels = {
+        name = "companies"
+      }
+      name      = "companies"
+      namespace = "argo-cd"
+    }
+    spec = {
+      destination = {
+        namespace = kubernetes_namespace.season_link.metadata.0.name
+        server    = "https://kubernetes.default.svc"
+      }
 
-  repository = "../charts"
-  chart      = "companies"
-  version    = "0.1.0"
-
-  depends_on = [helm_release.postgresql_companies]
+      project              = "default"
+      revisionHistoryLimit = 3
+      source = {
+        helm = {
+          releaseName = "companies"
+          valuesObject = {
+            fullnameOverride = "companies"
+          }
+        }
+        path           = "infra/charts/companies"
+        repoURL        = "https://github.com/mmoreiradj/season-link.git"
+        targetRevision = "make/ci"
+      }
+      syncPolicy = {
+        automated = {
+          prune      = true
+          selfHeal   = true
+          allowEmpty = true
+        }
+        retry = {
+          limit = 3
+          backoff = {
+            duration    = 5
+            factor      = 2
+            maxDuration = 60
+          }
+        }
+        syncOptions = [
+          "Validate=false",
+          "CreateNamespace=false",
+          "PrunePropagationPolicy=foreground",
+          "PruneLast=true",
+          "RespectIgnoreDifferences=true"
+        ]
+      }
+    }
+  }
 }

@@ -84,25 +84,69 @@ resource "helm_release" "postgresql_profiles" {
   }
 }
 
-resource "helm_release" "profiles" {
-  name      = "profiles"
-  namespace = kubernetes_namespace.season_link.metadata.0.name
+resource "kubernetes_manifest" "application_argo_cd_profiles" {
+  manifest = {
+    apiVersion = "argoproj.io/v1alpha1"
+    kind       = "Application"
+    metadata = {
+      labels = {
+        name = "profiles"
+      }
+      name      = "profiles"
+      namespace = "argo-cd"
+    }
+    spec = {
+      destination = {
+        namespace = kubernetes_namespace.season_link.metadata.0.name
+        server    = "https://kubernetes.default.svc"
+      }
 
-  repository = "../charts"
-  chart      = "profiles"
-
-  set {
-    name  = "fullnameOverride"
-    value = "profiles"
-  }
-
-  set {
-    name  = "keycloak.auth.passwordSecretName"
-    value = kubernetes_secret.profiles_user_password.metadata.0.name
-  }
-
-  set {
-    name  = "minio.auth.secretName"
-    value = kubernetes_secret.minio_credentials.metadata.0.name
+      project              = "default"
+      revisionHistoryLimit = 3
+      source = {
+        helm = {
+          releaseName = "profiles"
+          valuesObject = {
+            fullnameOverride = "profiles"
+            keycloak = {
+              auth = {
+                passwordSecretName = kubernetes_secret.profiles_user_password.metadata.0.name
+              }
+            }
+            minio = {
+              auth = {
+                secretName = kubernetes_secret.minio_credentials.metadata.0.name
+              }
+            }
+          }
+        }
+        path           = "infra/charts/profiles"
+        repoURL        = "https://github.com/mmoreiradj/season-link.git"
+        targetRevision = "make/ci"
+      }
+      syncPolicy = {
+        automated = {
+          prune      = true
+          selfHeal   = true
+          allowEmpty = true
+        }
+        retry = {
+          limit = 3
+          backoff = {
+            duration    = 5
+            factor      = 2
+            maxDuration = 60
+          }
+        }
+        syncOptions = [
+          "Validate=false",
+          "CreateNamespace=false",
+          "PrunePropagationPolicy=foreground",
+          "PruneLast=true",
+          "RespectIgnoreDifferences=true"
+        ]
+      }
+    }
   }
 }
+

@@ -32,13 +32,59 @@ resource "helm_release" "postgresql_jobs" {
   }
 }
 
-resource "helm_release" "jobs" {
-  name      = "jobs"
-  namespace = kubernetes_namespace.season_link.metadata.0.name
+resource "kubernetes_manifest" "application_argo_cd_jobs" {
+  manifest = {
+    apiVersion = "argoproj.io/v1alpha1"
+    kind       = "Application"
+    metadata = {
+      labels = {
+        name = "jobs"
+      }
+      name      = "jobs"
+      namespace = "argo-cd"
+    }
+    spec = {
+      destination = {
+        namespace = kubernetes_namespace.season_link.metadata.0.name
+        server    = "https://kubernetes.default.svc"
+      }
 
-  repository = "../charts"
-  chart      = "jobs"
-  version    = "0.1.0"
-
-  depends_on = [helm_release.postgresql_jobs]
+      project              = "default"
+      revisionHistoryLimit = 3
+      source = {
+        helm = {
+          releaseName = "jobs"
+          valuesObject = {
+            fullnameOverride = "jobs"
+          }
+        }
+        path           = "infra/charts/jobs"
+        repoURL        = "https://github.com/mmoreiradj/season-link.git"
+        targetRevision = "make/ci"
+      }
+      syncPolicy = {
+        automated = {
+          prune      = true
+          selfHeal   = true
+          allowEmpty = true
+        }
+        retry = {
+          limit = 3
+          backoff = {
+            duration    = 5
+            factor      = 2
+            maxDuration = 60
+          }
+        }
+        syncOptions = [
+          "Validate=false",
+          "CreateNamespace=false",
+          "PrunePropagationPolicy=foreground",
+          "PruneLast=true",
+          "RespectIgnoreDifferences=true"
+        ]
+      }
+    }
+  }
 }
+
