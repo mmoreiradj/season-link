@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import baseQueryConfig from 'common/helpers/base-query-fn';
-import { Application } from '../types/applications.type';
+import { Application, ApplicationState } from '../types/applications.type';
 import JobOfferType from '../types/job-offer.type';
 
 export const APPLICATIONS_API_REDUCER_KEY = 'applicationsApi';
@@ -31,7 +31,7 @@ export const applicationsApi = createApi({
 
     getExecutedJobOffers: builder.query<JobOfferType[], void>({
       async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
-        const applications: Application[] | undefined = (
+        let applications: Application[] | undefined = (
           await fetchWithBQ('applications')
         )?.data as Application[];
 
@@ -40,7 +40,9 @@ export const applicationsApi = createApi({
           return { data: [] };
         }
 
-        // TODO filter the applications by state
+        applications = applications?.filter?.(
+          (app) => app.state == ApplicationState.APPROVED
+        );
 
         const jobOffers: JobOfferType[] = await Promise.all(
           applications.map(async (application) => {
