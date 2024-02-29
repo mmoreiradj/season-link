@@ -48,6 +48,7 @@ const JobPage = () => {
       {data && jobData && (
         <>
           <PaperSelect
+            containerStyle={{ paddingHorizontal: 10 }}
             label='Job'
             arrayList={
               jobData?.map((category) => ({
@@ -76,6 +77,7 @@ const JobPage = () => {
             ]}
             textInputMode='outlined'
           />
+          <Divider />
           <JobList jobOffers={data} />
         </>
       )}
