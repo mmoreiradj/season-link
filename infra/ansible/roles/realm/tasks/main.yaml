@@ -8,6 +8,7 @@
     id: season-link
     realm: season-link
     state: present
+    enabled: true
 
 - name: Create Mobile App Client
   community.general.keycloak_client:
