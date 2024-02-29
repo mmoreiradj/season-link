@@ -29,11 +29,58 @@ resource "helm_release" "neo4j" {
   depends_on = [helm_release.nats]
 }
 
-resource "helm_release" "recommendations" {
-  name      = "recommendations"
-  namespace = kubernetes_namespace.season_link.metadata.0.name
+resource "kubernetes_manifest" "application_argo_cd_recommendations" {
+  manifest = {
+    apiVersion = "argoproj.io/v1alpha1"
+    kind       = "Application"
+    metadata = {
+      labels = {
+        name = "recommendations"
+      }
+      name      = "recommendations"
+      namespace = "argo-cd"
+    }
+    spec = {
+      destination = {
+        namespace = kubernetes_namespace.season_link.metadata.0.name
+        server    = "https://kubernetes.default.svc"
+      }
 
-  repository = "../charts"
-  chart      = "recommendations"
-  version    = "0.1.0"
+      project              = "default"
+      revisionHistoryLimit = 3
+      source = {
+        helm = {
+          releaseName = "recommendations"
+          valuesObject = {
+            fullnameOverride = "recommendations"
+          }
+        }
+        path           = "infra/charts/recommendations"
+        repoURL        = "https://github.com/mmoreiradj/season-link.git"
+        targetRevision = "make/ci"
+      }
+      syncPolicy = {
+        automated = {
+          prune      = true
+          selfHeal   = true
+          allowEmpty = true
+        }
+        retry = {
+          limit = 3
+          backoff = {
+            duration    = 5
+            factor      = 2
+            maxDuration = 60
+          }
+        }
+        syncOptions = [
+          "Validate=false",
+          "CreateNamespace=false",
+          "PrunePropagationPolicy=foreground",
+          "PruneLast=true",
+          "RespectIgnoreDifferences=true"
+        ]
+      }
+    }
+  }
 }
