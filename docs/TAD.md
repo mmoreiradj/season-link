@@ -880,7 +880,14 @@ One of the most important features for us is the service discovery (which fixes 
 
 We used GitHub Actions for our CI/CD. It is a continuous integration and continuous deployment service developed by GitHub.
 
-We used it to build our containers and deploy them to our Kubernetes cluster using Helm and Terraform.
+When tagging a branch, the CI/CD pipeline is triggered.
+
+- it builds the docker images
+- it pushes the docker images to the registry
+- it edits the helm chart with the new version
+- argocd, our CD tool, detects the change and updates the deployment on the kubernetes cluster
+
+The helm charts and the argocd configuration are stored in `infra/`.
 
 ### 6.3. Monitoring and Logging
 
