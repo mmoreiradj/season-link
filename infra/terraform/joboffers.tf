@@ -60,7 +60,7 @@ resource "kubernetes_manifest" "application_argo_cd_job_offers" {
         }
         path           = "infra/charts/job-offers"
         repoURL        = "https://github.com/mmoreiradj/season-link.git"
-        targetRevision = "make/ci"
+        targetRevision = "HEAD"
       }
       syncPolicy = {
         automated = {
