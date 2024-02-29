@@ -77,4 +77,9 @@ resource "kubernetes_manifest" "application_argo_cd_gateway" {
       }
     }
   }
+
+  field_manager {
+    name            = "terraform"
+    force_conflicts = true
+  }
 }

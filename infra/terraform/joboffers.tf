@@ -86,4 +86,9 @@ resource "kubernetes_manifest" "application_argo_cd_job_offers" {
       }
     }
   }
+
+  field_manager {
+    name            = "terraform"
+    force_conflicts = true
+  }
 }
