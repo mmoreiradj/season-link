@@ -116,7 +116,7 @@ pub async fn refresh_token() -> Result<String, AppError> {
 pub async fn create_keycloak_user(dto: &CreateCandidate) -> Result<Uuid, AppError> {
     let token = refresh_token().await?;
     let client = reqwest::Client::new();
-    let root_url = env::var("keycloak_url").expect("No keycloak URL !");
+    let root_url = env::var("KEYCLOAK_URL").expect("No keycloak URL !");
 
     // First create the user
     let create_body = serde_json::json!({
@@ -225,7 +225,7 @@ pub async fn create_keycloak_user(dto: &CreateCandidate) -> Result<Uuid, AppErro
 pub async fn disable_keycloak_user(user_id: &Uuid) -> Result<(), AppError> {
     let token = refresh_token().await?;
     let client = reqwest::Client::new();
-    let root_url = env::var("keycloak_url").expect("No keycloak URL !");
+    let root_url = env::var("KEYCLOAK_URL").expect("No keycloak URL !");
 
     let update_user_body = json!({
         "enabled": false
