@@ -11,8 +11,20 @@ export const jobOffersApi = createApi({
   tagTypes: ['JobOffer', 'Advantage'],
   baseQuery: fetchBaseQuery(baseQueryConfig),
   endpoints: (builder) => ({
-    getJobOffers: builder.query<JobOfferType[], void>({
-      query: () => `/job-offers`,
+    getJobOffers: builder.query<JobOfferType[], string | undefined>({
+      query: (jobId) => {
+        if (jobId) {
+          return {
+            url: '/recommendations',
+            params: {
+              jobId: jobId,
+            },
+          };
+        } else {
+          return `/job-offers`;
+        }
+      },
+
       providesTags: (result) =>
         result
           ? [
@@ -37,17 +49,6 @@ export const jobOffersApi = createApi({
       query: (id) => `/job-offers/${id}`,
       providesTags: (result, error, id) =>
         result ? [{ type: 'JobOffer', id }] : [],
-    }),
-
-    getRecommendedJobOffers: builder.query<JobOfferType[], string>({
-      query: (jobId) => `/recommendations?jobId=${jobId}`,
-      providesTags: (result, error, id) =>
-        result
-          ? [
-              ...result.map(({ id }) => ({ type: 'JobOffer', id }) as const),
-              { type: 'JobOffer', id: 'LIST' },
-            ]
-          : [{ type: 'JobOffer', id: 'LIST' }],
     }),
   }),
 });
