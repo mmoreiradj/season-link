@@ -1,3 +1,4 @@
+
 # Season Link
 
 ## Objective
@@ -332,7 +333,7 @@ The architecture of Season Link is a microservice architecture. It is composed o
 
 The main services are:
 
-- **Profile**: This service is responsible for managing the profiles of the candidates. It is responsible for creating, reading, updating, deleting the profiles of the candidates and rating the companies.
+- **Profile**: This service is responsible for managing the profiles of the candidates. It is responsible for creating, reading, updating, deleting the profiles of the candidates and rating the candidates.
 - **Company**: This service is responsible for managing the companies. It is responsible for creating, reading, updating, deleting the companies and rating the companies.
 - **Job**: This service is responsible for managing the job offers. It is responsible for reading job offers and categories.
 - **Chat**: This service is responsible for managing the messages between the candidates and the companies. It is responsible for sending and receiving messages.
@@ -411,10 +412,13 @@ In the non-relational databases, we used Neo4j, a graph database management syst
 ## 3. Mobile application
 
 The mobile application is developed using React Native. It is a cross-platform framework that allows us to develop mobile applications for iOS and Android using a single codebase.
+In combination the Expo framework is used, as it helps with smoothing out many device specific details with a plethora of libraries within its ecosystem. 
 
 It's mainly targeted at candidates, and it allows them to create an account, edit their profile, view job offers, apply to job offers, chat with employers, review companies, etc.
 
-The code is organized by domain, and we used Redux for state management and api calls.
+The code is organized by domain, and we used the whole Redux Toolkit suite to handle all API calls with automatic caching and state management. The documentation is complete, making it easy to get started with it.
+
+In order to implement the Material UI style, we used the `react-native-paper` library in conjunction with other libraries extending on the first one.
 
 ### 3.1 How the mobile application consumes the services
 
@@ -594,7 +598,7 @@ erDiagram
 
 ### 5.1.3 File Storage
 
-The CVs are stored on a s3 bucket.
+The CVs are stored on a self-hosted s3 bucket, in our case a MinIO.
 
 ### 5.2 Company
 
@@ -902,13 +906,15 @@ For our logging, we used Loki, which is a horizontally-scalable, highly-availabl
 ### 7.1. What went well
 
 - **Development environment**: We used Docker to create a development environment that is as close as possible to the production environment, and setup a code, build, run loop that is automated with docker-compose.
+- **Domain Driven Development**: We split the business logic into different domains that are separated in both services and file structure for the mobile app. It turned out to be a nice way to manage an increasingly high amount of features without drowning in a mess.
 
 ### 7.2. What went wrong
 
 - **Lack of experience with some technologies**: We used some technologies that we were not familiar with, such as Axum, Quarkus, and R2DBC. This slowed us down, and we had to learn these technologies on the fly.
 - **Lack of understanding of the microservice architecture**: We did not fully understand the microservice architecture, and we had to learn it on the fly. This resulted in some design mistakes, and time wasted.
 - **Lack of contracts**: We did not define the contracts between the front-end and the back-end, some routes were not well defined and some missing.
-- **Technical difficulties with React Native**: 
+- **Technical difficulties with React Native**: The ecosystem is far from being mature. Many packages are unmaintained, which turns into security vulnerabilities. Furthermore the Expo framework gets major updates regularly and breaks even more packages. This makes maintaining the application a nightmare.
+- **Lack of proper documentation**: Some libraries and products have missing parts of documentation. Keycloak REST API has straight up lies in which fields are usable inside POST/PUT requests. Redux Toolkit does not have any documentation when it comes to handling binary files.
 
 ### 7.3. What we would do differently
 
