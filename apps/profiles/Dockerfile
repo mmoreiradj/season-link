@@ -16,7 +16,7 @@ RUN cargo build
 FROM alpine:3.19 as runner
 
 # TLS support, libgcc for musl dynamic linking
-RUN apk update && apk add openssl ca-certificates && apk add libgcc
+RUN apk update && apk add openssl ca-certificates && apk add libgcc && apk upgrade
 
 # COPY only the executable
 COPY --from=builder /build/target/debug/season-link-profiles /opt
