@@ -35,6 +35,8 @@ jobs:
     permissions:
       packages: write
     runs-on: ubuntu-latest
+    outputs:
+      trivy: ${{ steps.trivy.outputs.results }}
     steps:
       - uses: actions/checkout@v4
       - uses: docker/metadata-action@v5
@@ -60,8 +62,31 @@ jobs:
         with:
           context: ${{ inputs.context }}
           file: ${{ inputs.dockerfile_path }}
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/${{ inputs.image_name }}:buildcache
           cache-to: type=registry,ref=ghcr.io/${{ github.repository }}/${{ inputs.image_name }}:buildcache,mode=max
+      - name: Run Trivy
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ghcr.io/${{ github.repository }}/${{ inputs.image_name }}:latest
+          format: table
+          output: trivy-results.txt
+          exit-code: 0
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+      - name: Set Trivy Results
+        id: trivy
+        if: ${{ github.event_name == 'pull_request' }}
+        run: echo "results=$(cat trivy-results.txt)" >> "$GITHUB_OUTPUT"
+
+  trivy-results:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' }}
+    needs: build
+    steps:
+      - name: Trivy Results
+        if: ${{ github.event_name == 'pull_request' }}
+        run: echo "${{ needs.build.outputs.trivy }}"

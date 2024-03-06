@@ -1,0 +1,13 @@
+name: Pull Request
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  scan-images:
+    permissions:
+      packages: write
+    name: Scan Images
+    uses: mmoreiradj/season-link/.github/workflows/build-all.yaml@main
+    secrets: inherit
