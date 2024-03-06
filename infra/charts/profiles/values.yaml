@@ -18,7 +18,7 @@ jobServiceUrl: "http://jobs:8080"
 imageGeneratorServiceUrl: "http://image-generator:8080"
 
 keycloak:
-  url: "http://keycloak:8080"
+  url: "http://keycloak:80"
   realm: "season-link"
   clientId: "mobile-app"
   auth:
