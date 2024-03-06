@@ -8,6 +8,7 @@ jobs:
   build:
     permissions:
       packages: write
+      pull-requests: write
     name: Build All Images
     strategy:
       matrix:

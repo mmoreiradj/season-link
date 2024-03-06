@@ -86,10 +86,20 @@ jobs:
           echo 'EOF' >> $GITHUB_OUTPUT
 
   trivy-results:
+    permissions:
+      pull-requests: write
+    name: Comment Trivy Results
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'pull_request' }}
     needs: build
     steps:
-      - name: Trivy Results
-        if: ${{ github.event_name == 'pull_request' }}
-        run: echo "${{ needs.build.outputs.trivy }}"
+      - name: Comment Results
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            ## Trivy analysis results for the image ghcr.io/${{ github.repository }}/${{ inputs.image_name }}
+            ```
+            ${{ needs.build.outputs.trivy }}
+            ```
+
+            :robot: *I am a bot, I can't fix vulnerabilities for you, but I can help you find them!*

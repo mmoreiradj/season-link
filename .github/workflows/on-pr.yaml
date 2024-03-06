@@ -8,6 +8,7 @@ jobs:
   scan-images:
     permissions:
       packages: write
+      pull-requests: write
     name: Scan Images
     uses: mmoreiradj/season-link/.github/workflows/build-all.yaml@main
     secrets: inherit
