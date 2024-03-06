@@ -80,7 +80,10 @@ jobs:
       - name: Set Trivy Results
         id: trivy
         if: ${{ github.event_name == 'pull_request' }}
-        run: echo "results=$(cat trivy-results.txt)" >> "$GITHUB_OUTPUT"
+        run: |
+          echo 'results<<EOF' >> $GITHUB_OUTPUT
+          cat trivy-results.txt >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
 
   trivy-results:
     runs-on: ubuntu-latest
