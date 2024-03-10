@@ -44,8 +44,8 @@ resource "kubernetes_manifest" "application_argo_cd_gateway" {
             }
 
             keycloak = {
-              issuerUri = "https://auth-season-link.ve.moreiradj.net"
-              jwksUri   = "https://auth-season-link.ve.moreiradj.net/auth/realms/season-link/protocol/openid-connect/certs"
+              issuerUri = "https://auth-season-link.ve.moreiradj.net/realms/season-link"
+              jwksUri   = "https://auth-season-link.ve.moreiradj.net/realms/season-link/protocol/openid-connect/certs"
             }
           }
         }

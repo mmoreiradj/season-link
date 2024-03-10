@@ -38,9 +38,9 @@ postgresql:
   host: "postgresql-profiles"
   port: 5432
   database: "profiles"
-  username: "profiles"
+  username: "postgres"
   credentialsSecretName: "postgresql-profiles"
-  credentialsSecretPasswordKey: "password"
+  credentialsSecretPasswordKey: "postgres-password"
 
 serviceAccount:
   # Specifies whether a service account should be created
