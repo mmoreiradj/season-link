@@ -60,7 +60,7 @@ The project uses the following libraries to ensure input validation:
 
 Authentication is the process of verifying that an individual, entity or website is who it claims to be. It's an important part of web security. Indeed, it is the first line of defense against unauthorized access to web resources.
 
-Since it is such an important part of web security, the project uses Keycloak to handle authentication. Keycloak is an open-source Identity and Access Management solution that provides a single sign-on and identity management for web and mobile applications.
+Since it is such an important part of web security, the project uses Keycloak to handle authentication. Keycloak is an open-source Identity and Access Management (IAM) solution that provides a single sign-on and identity management for web and mobile applications.
 
 It's a secure, flexible, and easy-to-use solution that is used by the project to ensure the security of the application.
 
@@ -207,9 +207,72 @@ We use the following tools to prevent memory leaks:
 - Java's garbage collector
 - Node.js's garbage collector
 
-## Static Application Security Testing & Software Composition Analysis
+## Vulnerability analysis
+Over time, vulnerabilities are discovered in our dependencies. This is also bound to happen in the software that we write.
+In order not to stay vulnerable for long, it is important to keep track of the vulnerabilities in the librairies and to ensure that the software that we write isn't flawed.
 
-## Production environment security
+### Static Application Security Testing (SAST)
+Static Application Security Testing (SAST) is the process of analyzing the source code of an application to identify security vulnerabilities.
+To analyse the source code, 2 tools were put in place:
+- SonarQube: This tool brings up security hotspot in addition to code quality issues. 
+- Snyk: This tool brings up vulnerabilities in the code in addition to vulnerabilities in the dependencies of the application.
+
+![sonarqube](./assets/images/sonarqube-results.png)
+
+With empiric data, it was found that SonarQube is better at finding code quality issues, while Snyk is better at finding vulnerabilities in the dependencies of the application. 
+
+Snyk seems to behave in a more consistent way in multi-project repositories, and was able to identify issues with deployement related files (Helm charts)
+
+![snyk_helm](./assets/images/snyk-helm.png)
+
+### Software composition analysis (SCA)
+Software composition analysis is the process of identifying the vulnerabilities in the dependencies of the application.
+In order to keep track of the vulnerabilities in the dependencies of the application, Snyk is used.
+
+![snyk_detection](./assets/images/snyk-detection.png)
+
+## Production Environment Hardening
+When an application is deployed onto the production environment, it is important to ensure that the environment is hardened. 
+
+This means reducing the attack surface of the environment by using the minimum amount of services, ensuring that each service is up-to-date, and ensuring that the services are configured securely (usually, by disabling development mode).
+
+This also means locking down network communications between services, ensuring that only the necessary services can communicate with each other.
+
+### Docker images - build process 
+To reduce the attack surface, during the build process of the OCI images, the following steps are taken:
+
+- If possible, use images provided by bitnami, as they already provide a secure base image. Otherwise, use the official images, hopefully an `alpine` variant since it is smaller and has less attack surface.
+
+- Ensure binaries are up to date by updating them via `apt/apk update` and `apt/apk upgrade`.
+
+- Copy only the necessary files into the image. This is done by using a `.dockerignore` file to exclude unnecessary files and directories.
+
+- Ensure that the image is not running as root. This is done by using the `USER` directive in the Dockerfile. Do not forget to give the user the necessary permissions to run the application via the `chown` command. 
+
+- If possible, remove write permissions from the user running the application.
+
+- Ensure that the image is not running in development mode. For example, in our NodeJS services, we use the `NODE_ENV` environment variable to set the environment to `production`, and in our Go services, we use the `GIN_MODE` environment variable to set the environment to `release`.
+
+- Make the build process multi-stage to reduce the attack surface. You don't need the build tools in the final image.
+
+### Kubernetes Network Security 
+In order to lock down the network communication between services, in our production kubernetes cluster, we made use of network policies.
+
+Network policies allow us to define the rules for network traffic for each service.
+As such, we limited the ingress of each service to only accept TCP traffic from the services that need to communicate with it. Additionally, we accept DNS traffic from the `kube-system` namespace to allow the services to communicate with the Kubernetes cluster.
+
+For simplicity, we did not limit the Egress, meaning that each service is able to communicate with the wider internet. For increased security, we should limit the Egress to only the necessary traffic, which can be hard to quantify.
+
+### Monitoring
+In the event a security breach occurs, we need to be able to detect it as soon as possible. We use Falco with the default rule set to monitor for suspicious activity in the cluster.
+It is setup with a webhook to send alerts in a discord channel.
+
+
+### Secret handling
+Secrets are sensitive information that should not be exposed. Leaking them forces us to rotate them, which can be a painful process and create downtime if the issue is extremly critical.
+
+#### Secrets during development
+To limit the exposure of secrets, we used the `pre-commit` tool to run `yelp`'s `detect-secrets` tool to ensure that no secrets are ever committed to the repository.
 
 ## CI/CD security
 
