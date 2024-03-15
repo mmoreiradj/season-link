@@ -23,7 +23,7 @@
     "axios-case-converter": "^1.1.0",
     "base-64": "^1.0.0",
     "camelcase-keys": "^9.1.2",
-    "expo": "~49.0.13",
+    "expo": "~49.0.23",
     "expo-auth-session": "~5.0.2",
     "expo-crypto": "~12.4.1",
     "expo-document-picker": "~11.5.4",
