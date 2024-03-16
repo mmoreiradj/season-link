@@ -1,5 +1,44 @@
+<!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
+
+- [Security Policy](#security-policy)
+   * [Introduction](#introduction)
+   * [Summary](#summary)
+   * [Standard web security practices (OWASP)](#standard-web-security-practices-owasp)
+      + [Input Validation](#input-validation)
+      + [Authentication](#authentication)
+         - [Brute Force Detection](#brute-force-detection)
+         - [Password Policy](#password-policy)
+         - [Tokens](#tokens)
+         - [Client Authentication](#client-authentication)
+      + [Access Control](#access-control)
+         - [Least Privilege](#least-privilege)
+      + [Encryption](#encryption)
+      + [Error Handling and Logging](#error-handling-and-logging)
+      + [Communication Security](#communication-security)
+         - [External Communication](#external-communication)
+         - [Internal Communication](#internal-communication)
+      + [Files](#files)
+      + [Memory Leaks](#memory-leaks)
+   * [Vulnerability analysis](#vulnerability-analysis)
+      + [Static Application Security Testing (SAST)](#static-application-security-testing-sast)
+      + [Software composition analysis (SCA)](#software-composition-analysis-sca)
+   * [Production Environment Hardening](#production-environment-hardening)
+      + [Docker images - build process ](#docker-images-build-process)
+      + [Kubernetes Network Security ](#kubernetes-network-security)
+      + [Monitoring](#monitoring)
+      + [Secret handling](#secret-handling)
+         - [Secrets during development](#secrets-during-development)
+   * [CI/CD security](#cicd-security)
+      + [Secrets](#secrets)
+      + [Reusing Actions](#reusing-actions)
+      + [Least Privilege](#least-privilege-1)
+
+<!-- TOC end -->
+
+<!-- TOC --><a name="security-policy"></a>
 # Security Policy
 
+<!-- TOC --><a name="introduction"></a>
 ## Introduction
 
 The objective of this document is to provide a clear and concise explanation of the actions taken by the project maintainers to ensure the security of the project and its users.
@@ -25,6 +64,7 @@ It is built with the following technologies:
 - PostgreSQL
 - Keycloak
 
+<!-- TOC --><a name="summary"></a>
 ## Summary
 
 - Standard web security practices (OWASP)
@@ -35,10 +75,12 @@ It is built with the following technologies:
 - CI/CD security
 - Pen Testing ?
 
+<!-- TOC --><a name="standard-web-security-practices-owasp"></a>
 ## Standard web security practices (OWASP)
 
 The project follows the OWASP standards for web security. The following are the practices that are implemented:
 
+<!-- TOC --><a name="input-validation"></a>
 ### Input Validation
 
 Input validation is crucial in web security for several reasons:
@@ -56,6 +98,7 @@ The project uses the following libraries to ensure input validation:
 - Go's standard library
 - Rust Serde
 
+<!-- TOC --><a name="authentication"></a>
 ### Authentication
 
 Authentication is the process of verifying that an individual, entity or website is who it claims to be. It's an important part of web security. Indeed, it is the first line of defense against unauthorized access to web resources.
@@ -80,18 +123,21 @@ We've also chosen to increase the security of the application by editing the fol
 - Password Policy
 - Tokens
 
+<!-- TOC --><a name="brute-force-detection"></a>
 #### Brute Force Detection
 
 Go to `realms > YOUR_REALM > Realm Settings > Security Defenses > Brute Force Detection` and set the following:
 
 <img src="assets/images/keycloak-brute-force-detection.png" alt="Keycloak Brute Force Detection" width="500"/>
 
+<!-- TOC --><a name="password-policy"></a>
 #### Password Policy
 
 Go to `realms > YOUR_REALM > Athentication > Policies > Password Policy` and set the following:
 
 <img src="assets/images/keycloak-password-policy.png" alt="Keycloak Password Policy" width="500"/>
 
+<!-- TOC --><a name="tokens"></a>
 #### Tokens
 
 Go to `realms > YOUR_REALM > Realm Settings > Tokens` and set the following:
@@ -108,16 +154,14 @@ For the refresh token:
 
 This ensures only one user can be logged in at a time with a refresh token and that the refresh token can only be used once.
 
+<!-- TOC --><a name="client-authentication"></a>
 #### Client Authentication
 
 There are many ways to interract with Keycloak and OAuth2. The project uses the `Authorization Code` flow for the web application and the `Client Credentials` flow for the REST API.
 
 This is the most secure way to interract with Keycloak and prevents the client from having to store or manipulate the user's credentials as well as avoid potential replay attacks or malicious redirections.
 
-### DoS Attacks
-
-TODO
-
+<!-- TOC --><a name="access-control"></a>
 ### Access Control
 
 Access control is the process of limiting access to a system or to physical or virtual resources. It is a fundamental concept in security that minimizes risk to the business or organization.
@@ -128,18 +172,21 @@ We also use roles to limit the resources that a user can access. For example, on
 
 In that sense, we both use Role-Based Access Control (RBAC) and Attribute-Based Access Control (ABAC).
 
+<!-- TOC --><a name="least-privilege"></a>
 #### Least Privilege
 
 The principle of least privilege is the practice of limiting access rights for users to the bare minimum permissions they need to perform their work. This helps to reduce the risk of a user abusing their privileges. In case of a breach, the damage could also be limited.
 
 For example, we use a service account for the application that needs to access Keycloak. 
 
+<!-- TOC --><a name="encryption"></a>
 ### Encryption
 
 Encryption is the process of converting information or data into a code, especially to prevent unauthorized access. In
 
 Our application itself does not handle sensitive data. However, we use Keycloak to handle sensitive data such as passwords and tokens.
 
+<!-- TOC --><a name="error-handling-and-logging"></a>
 ### Error Handling and Logging
 
 Logs and error handling are crucial for security.
@@ -155,16 +202,19 @@ All our services send logs to the standard output. Theses logs are json-formatte
 - `timestamp`: the timestamp of the log
 - `context`: the context of the log (e.g. the route, the user, etc.)
 
-These logs are then collected by another service for further analysis. See TODO for more information.
+These logs are then collected by another service for further analysis.
 
+<!-- TOC --><a name="communication-security"></a>
 ### Communication Security
 
+<!-- TOC --><a name="external-communication"></a>
 #### External Communication
 
 All external communication is done through HTTPS. This ensures confidentiality, integrity, and authenticity of the communication.
 
 This is achieved through traefik, a reverse proxy and cert-manager, a Kubernetes add-on that automatically provisions TLS certificates.
 
+<!-- TOC --><a name="internal-communication"></a>
 #### Internal Communication
 
 Internally, our applications communicate in different ways:
@@ -176,6 +226,7 @@ NATS communication is encrypted by default. Our database drivers also support en
 
 For the REST APIs, we use Istio, a service mesh that provides mutual TLS for all the communication between the services. (we would like to use it, but it's not implemented yet).
 
+<!-- TOC --><a name="files"></a>
 ### Files
 
 File upload are an important part of our application. It's also a common attack vector. Theses attacks include:
@@ -192,6 +243,7 @@ To prevent these attacks, for simpler implementation and better user experience,
 - Logging
 - etc.
 
+<!-- TOC --><a name="memory-leaks"></a>
 ### Memory Leaks
 
 Memory leaks are a common security issue. They can lead to:
@@ -207,10 +259,12 @@ We use the following tools to prevent memory leaks:
 - Java's garbage collector
 - Node.js's garbage collector
 
+<!-- TOC --><a name="vulnerability-analysis"></a>
 ## Vulnerability analysis
 Over time, vulnerabilities are discovered in our dependencies. This is also bound to happen in the software that we write.
 In order not to stay vulnerable for long, it is important to keep track of the vulnerabilities in the librairies and to ensure that the software that we write isn't flawed.
 
+<!-- TOC --><a name="static-application-security-testing-sast"></a>
 ### Static Application Security Testing (SAST)
 Static Application Security Testing (SAST) is the process of analyzing the source code of an application to identify security vulnerabilities.
 To analyse the source code, 2 tools were put in place:
@@ -225,12 +279,14 @@ Snyk seems to behave in a more consistent way in multi-project repositories, and
 
 ![snyk_helm](./assets/images/snyk-helm.png)
 
+<!-- TOC --><a name="software-composition-analysis-sca"></a>
 ### Software composition analysis (SCA)
 Software composition analysis is the process of identifying the vulnerabilities in the dependencies of the application.
 In order to keep track of the vulnerabilities in the dependencies of the application, Snyk is used.
 
 ![snyk_detection](./assets/images/snyk-detection.png)
 
+<!-- TOC --><a name="production-environment-hardening"></a>
 ## Production Environment Hardening
 When an application is deployed onto the production environment, it is important to ensure that the environment is hardened. 
 
@@ -238,6 +294,7 @@ This means reducing the attack surface of the environment by using the minimum a
 
 This also means locking down network communications between services, ensuring that only the necessary services can communicate with each other.
 
+<!-- TOC --><a name="docker-images-build-process"></a>
 ### Docker images - build process 
 To reduce the attack surface, during the build process of the OCI images, the following steps are taken:
 
@@ -255,6 +312,7 @@ To reduce the attack surface, during the build process of the OCI images, the fo
 
 - Make the build process multi-stage to reduce the attack surface. You don't need the build tools in the final image.
 
+<!-- TOC --><a name="kubernetes-network-security"></a>
 ### Kubernetes Network Security 
 In order to lock down the network communication between services, in our production kubernetes cluster, we made use of network policies.
 
@@ -263,17 +321,21 @@ As such, we limited the ingress of each service to only accept TCP traffic from 
 
 For simplicity, we did not limit the Egress, meaning that each service is able to communicate with the wider internet. For increased security, we should limit the Egress to only the necessary traffic, which can be hard to quantify.
 
+<!-- TOC --><a name="monitoring"></a>
 ### Monitoring
 In the event a security breach occurs, we need to be able to detect it as soon as possible. We use Falco with the default rule set to monitor for suspicious activity in the cluster.
 It is setup with a webhook to send alerts in a discord channel.
 
 
+<!-- TOC --><a name="secret-handling"></a>
 ### Secret handling
 Secrets are sensitive information that should not be exposed. Leaking them forces us to rotate them, which can be a painful process and create downtime if the issue is extremly critical.
 
+<!-- TOC --><a name="secrets-during-development"></a>
 #### Secrets during development
 To limit the exposure of secrets, we used the `pre-commit` tool to run `yelp`'s `detect-secrets` tool to ensure that no secrets are ever committed to the repository.
 
+<!-- TOC --><a name="cicd-security"></a>
 ## CI/CD security
 
 Supply chain attacks are a growing concern in the software industry. It's important to ensure that the CI/CD pipeline is secure.
@@ -282,12 +344,14 @@ Our CI/CD system is build with GitHub Actions. It's a cloud-based CI/CD service 
 
 There are several security measures that are implemented in the CI/CD pipeline:
 
+<!-- TOC --><a name="secrets"></a>
 ### Secrets
 
 Secrets are sensitive data that are used in the CI/CD pipeline. For example, the credentials to access the database, the credentials to access the container registry, etc.
 
 These secrets are stored in GitHub Secrets. They are encrypted and only accessible to the CI/CD pipeline, they do not appear in the logs.
 
+<!-- TOC --><a name="reusing-actions"></a>
 ### Reusing Actions
 
 GitHub actions are reusable pieces of code that can be used in the CI/CD pipeline. It's important to audit the actions that are used to ensure that they are secure.
@@ -308,6 +372,7 @@ To make sure the version of the action is the one you audited, you can use the `
 
 This ensures that the action is the one you audited.
 
+<!-- TOC --><a name="least-privilege-1"></a>
 ### Least Privilege
 
 The CI/CD pipeline should have the least privilege. It should only have the permissions it needs to perform its work.
